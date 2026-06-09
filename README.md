@@ -121,3 +121,4 @@ PYTHON_BIN=.venv/bin/python
 ```bash
 .venv/bin/python data/synop_vector_db/query.py --json --k 3 "ความกดอากาศคืออะไร"
 ```
+# Initial-TMD-Chat-RAG-app
