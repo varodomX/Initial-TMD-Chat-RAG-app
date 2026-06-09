@@ -7,6 +7,10 @@ import {
   createCustomKnowledgeRetriever,
   hasCustomKnowledgeDb,
 } from "./custom-knowledge";
+import {
+  createKhonKaenLocalRetriever,
+  hasKhonKaenLocalVectorDb,
+} from "./khonkaen-local";
 import { createMockRetriever } from "./mock";
 import { createPgVectorRetriever } from "./pgvector";
 import {
@@ -27,6 +31,10 @@ export function createRetriever(): Retriever {
       retrievers.push(createCloudMultimodalRetriever());
     }
 
+    if (hasKhonKaenLocalVectorDb()) {
+      retrievers.push(createKhonKaenLocalRetriever());
+    }
+
     if (hasSynopLocalVectorDb()) {
       retrievers.push(createSynopLocalRetriever());
     }
@@ -42,6 +50,10 @@ export function createRetriever(): Retriever {
 
   if (process.env.RAG_PROVIDER === "custom-knowledge") {
     return createCustomKnowledgeRetriever();
+  }
+
+  if (process.env.RAG_PROVIDER === "khonkaen-local") {
+    return createKhonKaenLocalRetriever();
   }
 
   if (process.env.RAG_PROVIDER === "synop-local") {

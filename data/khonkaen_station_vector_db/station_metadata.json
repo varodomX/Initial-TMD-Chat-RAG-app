@@ -1,0 +1,34 @@
+{
+  "name": "Khon Kaen Meteorological Station Vector Database",
+  "language": "th",
+  "station_th": "ศูนย์อุตุนิยมวิทยาภาคตะวันออกเฉียงเหนือตอนบน",
+  "station_en": "UPPER NORTHEASTERN METEOROLOGICAL CENTER",
+  "old_name": "สถานีตรวจอากาศขอนแก่น",
+  "wmo": "48381",
+  "local_rain_station": "381201",
+  "location": "บริเวณท่าอากาศยานขอนแก่น ตำบลบ้านเป็ด อำเภอเมืองขอนแก่น จังหวัดขอนแก่น 40000",
+  "coordinates": "ละติจูด 16°27'39.7”N, ลองจิจูด 102°47'22.6”E",
+  "elevation_m": "186.97",
+  "surface_observation_times": [
+    "01:00",
+    "04:00",
+    "07:00",
+    "10:00",
+    "13:00",
+    "16:00",
+    "19:00",
+    "22:00"
+  ],
+  "upper_air_observation_times": [
+    "01:00",
+    "07:00",
+    "13:00",
+    "19:00"
+  ],
+  "chunk_count": 42,
+  "embedding": "sklearn TfidfVectorizer analyzer=char_wb ngram_range=(2,5)",
+  "created_from": [
+    "/mnt/data/metadata_for_layout.docx",
+    "/mnt/data/Design.pdf"
+  ]
+}

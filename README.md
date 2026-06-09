@@ -100,7 +100,8 @@ curl -X POST http://localhost:3000/api/ingest \
 
 ## Local Synop Vector DB
 
-โปรเจกต์นี้รองรับฐาน vector แบบไฟล์ที่ `data/synop_vector_db` แล้ว ถ้าไม่ได้ตั้ง `DATABASE_URL` ระบบจะเลือก retriever นี้อัตโนมัติ
+โปรเจกต์นี้รองรับฐาน vector แบบไฟล์ใน `data/` แล้ว เช่น `data/synop_vector_db` และ `data/khonkaen_station_vector_db`.
+ถ้าตั้ง `RAG_PROVIDER=local-all` ระบบจะรวมหลายฐานเข้าด้วยกันอัตโนมัติเมื่อโฟลเดอร์นั้นมีอยู่
 
 ติดตั้ง Python dependencies:
 
@@ -112,7 +113,7 @@ python3 -m venv .venv
 ตั้งค่า `.env` ถ้าต้องการบังคับใช้ฐานนี้:
 
 ```bash
-RAG_PROVIDER=synop-local
+RAG_PROVIDER=local-all
 PYTHON_BIN=.venv/bin/python
 ```
 
@@ -120,6 +121,7 @@ PYTHON_BIN=.venv/bin/python
 
 ```bash
 .venv/bin/python data/synop_vector_db/query.py --json --k 3 "ความกดอากาศคืออะไร"
+.venv/bin/python data/khonkaen_station_vector_db/search.py --json --k 3 "สถานีขอนแก่น WMO คืออะไร"
 ```
 
 ## Chat Logs
