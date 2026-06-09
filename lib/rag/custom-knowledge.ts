@@ -56,6 +56,23 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("ix") || normalizedQuery.includes("ir")) score += 8;
   if (normalizedQuery.includes("tr")) score += 6;
 
+  if (
+    normalizedQuery.includes("ช่องว่าง") ||
+    normalizedQuery.includes("ยังว่าง") ||
+    normalizedQuery.includes("ไม่มีข้อมูล") ||
+    normalizedQuery.includes("ข้อมูลขาด")
+  ) {
+    score += 12;
+  }
+
+  if (
+    normalizedQuery.includes("ยังไม่ถึง") ||
+    normalizedQuery.includes("เวลาตรวจ") ||
+    normalizedQuery.includes("รอบตรวจ")
+  ) {
+    score += 12;
+  }
+
   return score;
 }
 
