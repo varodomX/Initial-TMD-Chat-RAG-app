@@ -73,6 +73,14 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     score += 12;
   }
 
+  if (
+    normalizedQuery.includes("ตรวจ") ||
+    normalizedQuery.includes("ตาราง") ||
+    normalizedQuery.includes("บันทึก")
+  ) {
+    score += 6;
+  }
+
   return score;
 }
 
