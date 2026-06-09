@@ -32,8 +32,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content:
-        "สวัสดีครับ ผมคือ TMD Chat ถามข้อมูลจากเอกสารใน vector database ได้เลย ถ้ายังไม่ได้ตั้ง DATABASE_URL ผมจะใช้ข้อมูล demo ให้ลอง flow ก่อน",
+      content: "สวัสดีครับ ผมคือ TMD Chat",
     },
   ]);
   const [sources, setSources] = useState<Source[]>([]);
@@ -190,6 +189,17 @@ export default function Home() {
                   </strong>
                 </div>
                 <p>{source.content}</p>
+                {typeof source.metadata.imageUrl === "string" && (
+                  <img
+                    alt={
+                      typeof source.metadata.title === "string"
+                        ? source.metadata.title
+                        : source.id
+                    }
+                    className="source-image"
+                    src={source.metadata.imageUrl}
+                  />
+                )}
                 <small>score {source.score.toFixed(2)}</small>
               </article>
             ))
@@ -253,7 +263,7 @@ export default function Home() {
                 void sendMessage();
               }
             }}
-            placeholder="ถามจากเอกสาร หรือขอให้สรุปข้อมูลที่ค้นเจอ..."
+            placeholder="ค้นหาคำถาม"
             rows={2}
             value={input}
           />

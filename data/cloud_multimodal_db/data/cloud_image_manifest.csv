@@ -1,0 +1,11 @@
+id,code,file_path,source_url,license,note
+ci_001,Ci,images/Ci/ci_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cirrus ที่นี่"
+cc_001,Cc,images/Cc/cc_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cirrocumulus ที่นี่"
+cs_001,Cs,images/Cs/cs_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cirrostratus ที่นี่"
+ac_001,Ac,images/Ac/ac_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Altocumulus ที่นี่"
+as_001,As,images/As/as_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Altostratus ที่นี่"
+ns_001,Ns,images/Ns/ns_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Nimbostratus ที่นี่"
+sc_001,Sc,images/Sc/sc_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Stratocumulus ที่นี่"
+st_001,St,images/St/st_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Stratus ที่นี่"
+cu_001,Cu,images/Cu/cu_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cumulus ที่นี่"
+cb_001,Cb,images/Cb/cb_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cumulonimbus ที่นี่"

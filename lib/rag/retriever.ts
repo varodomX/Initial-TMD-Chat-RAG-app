@@ -1,3 +1,8 @@
+import {
+  createCloudMultimodalRetriever,
+  hasCloudMultimodalDb,
+} from "./cloud-multimodal";
+import { createCompositeRetriever } from "./composite";
 import { createMockRetriever } from "./mock";
 import { createPgVectorRetriever } from "./pgvector";
 import {
@@ -7,6 +12,26 @@ import {
 import type { Retriever } from "./types";
 
 export function createRetriever(): Retriever {
+  if (process.env.RAG_PROVIDER === "local-all") {
+    const retrievers: Retriever[] = [];
+
+    if (hasCloudMultimodalDb()) {
+      retrievers.push(createCloudMultimodalRetriever());
+    }
+
+    if (hasSynopLocalVectorDb()) {
+      retrievers.push(createSynopLocalRetriever());
+    }
+
+    if (retrievers.length) {
+      return createCompositeRetriever(retrievers);
+    }
+  }
+
+  if (process.env.RAG_PROVIDER === "cloud-multimodal") {
+    return createCloudMultimodalRetriever();
+  }
+
   if (process.env.RAG_PROVIDER === "synop-local") {
     return createSynopLocalRetriever();
   }
