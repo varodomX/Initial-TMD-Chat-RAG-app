@@ -16,6 +16,7 @@ type Source = {
 };
 
 export default function Home() {
+  const [conversationId] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -46,7 +47,7 @@ export default function Home() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages }),
+        body: JSON.stringify({ conversationId, messages: nextMessages }),
       });
       const data = await response.json();
 

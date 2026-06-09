@@ -121,4 +121,14 @@ PYTHON_BIN=.venv/bin/python
 ```bash
 .venv/bin/python data/synop_vector_db/query.py --json --k 3 "ความกดอากาศคืออะไร"
 ```
+
+## Chat Logs
+
+ทุกครั้งที่ผู้ใช้ส่งข้อความผ่าน `/api/chat` ระบบจะบันทึก prompt, คำตอบ, sources, mode และเวลาลงไฟล์:
+
+```text
+data/chat_logs/chat_messages.jsonl
+```
+
+ไฟล์นี้ถูก ignore จาก git เพื่อไม่ให้ข้อมูลสนทนาหรือข้อมูลส่วนตัวหลุดขึ้น repository. บน Vercel filesystem ไม่ถาวร ถ้าต้องเก็บ production logs ให้ย้ายไปฐานข้อมูล เช่น Supabase/Postgres.
 # Initial-TMD-Chat-RAG-app

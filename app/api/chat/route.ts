@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { appendChatLog } from "@/lib/chat-log";
 import { chatModel, getOpenAI } from "@/lib/openai";
 import { createRetriever, formatSourcesForPrompt } from "@/lib/rag/retriever";
 import type { ChatMessage, RagSource } from "@/lib/rag/types";
@@ -74,10 +75,17 @@ function createExtractiveAnswer(sources: RagSource[], reason?: string) {
 }
 
 export async function POST(request: Request) {
+  let conversationId = "unknown";
+  let latest: ChatMessage | undefined;
+
   try {
-    const body = (await request.json()) as { messages?: ChatMessage[] };
+    const body = (await request.json()) as {
+      conversationId?: string;
+      messages?: ChatMessage[];
+    };
+    conversationId = body.conversationId || crypto.randomUUID();
     const messages = body.messages ?? [];
-    const latest = latestUserMessage(messages);
+    latest = latestUserMessage(messages);
 
     if (!latest?.content?.trim()) {
       return NextResponse.json(
@@ -94,16 +102,27 @@ export async function POST(request: Request) {
     const context = formatSourcesForPrompt(sources);
 
     if (!process.env.OPENAI_API_KEY || process.env.AI_PROVIDER === "extractive") {
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content: createExtractiveAnswer(
+          sources,
+          !process.env.OPENAI_API_KEY
+            ? "ยังไม่ได้ตั้ง OPENAI_API_KEY จึงตอบจากข้อความที่ค้นเจอโดยตรง"
+            : undefined,
+        ),
+      };
+
+      await appendChatLog({
+        conversationId,
+        createdAt: new Date().toISOString(),
+        userMessage: latest,
+        assistantMessage,
+        sources,
+        mode: "extractive",
+      });
+
       return NextResponse.json({
-        message: {
-          role: "assistant",
-          content: createExtractiveAnswer(
-            sources,
-            !process.env.OPENAI_API_KEY
-              ? "ยังไม่ได้ตั้ง OPENAI_API_KEY จึงตอบจากข้อความที่ค้นเจอโดยตรง"
-              : undefined,
-          ),
-        },
+        message: assistantMessage,
         sources,
       });
     }
@@ -129,11 +148,22 @@ export async function POST(request: Request) {
         ],
       });
 
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content: readOutputText(response),
+      };
+
+      await appendChatLog({
+        conversationId,
+        createdAt: new Date().toISOString(),
+        userMessage: latest,
+        assistantMessage,
+        sources,
+        mode: "openai",
+      });
+
       return NextResponse.json({
-        message: {
-          role: "assistant",
-          content: readOutputText(response),
-        },
+        message: assistantMessage,
         sources,
       });
     } catch (error) {
@@ -141,20 +171,41 @@ export async function POST(request: Request) {
         throw error;
       }
 
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content: createExtractiveAnswer(
+          sources,
+          "OpenAI API แจ้งว่า quota ไม่พอ จึงสลับมาตอบจาก vector database โดยตรง",
+        ),
+      };
+
+      await appendChatLog({
+        conversationId,
+        createdAt: new Date().toISOString(),
+        userMessage: latest,
+        assistantMessage,
+        sources,
+        mode: "quota-fallback",
+      });
+
       return NextResponse.json({
-        message: {
-          role: "assistant",
-          content: createExtractiveAnswer(
-            sources,
-            "OpenAI API แจ้งว่า quota ไม่พอ จึงสลับมาตอบจาก vector database โดยตรง",
-          ),
-        },
+        message: assistantMessage,
         sources,
       });
     }
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unexpected server error.";
+
+    if (latest) {
+      await appendChatLog({
+        conversationId,
+        createdAt: new Date().toISOString(),
+        userMessage: latest,
+        error: message,
+        mode: "openai",
+      });
+    }
 
     return NextResponse.json({ error: message }, { status: 500 });
   }
