@@ -3,6 +3,10 @@ import {
   hasCloudMultimodalDb,
 } from "./cloud-multimodal";
 import { createCompositeRetriever } from "./composite";
+import {
+  createCustomKnowledgeRetriever,
+  hasCustomKnowledgeDb,
+} from "./custom-knowledge";
 import { createMockRetriever } from "./mock";
 import { createPgVectorRetriever } from "./pgvector";
 import {
@@ -14,6 +18,10 @@ import type { Retriever } from "./types";
 export function createRetriever(): Retriever {
   if (process.env.RAG_PROVIDER === "local-all") {
     const retrievers: Retriever[] = [];
+
+    if (hasCustomKnowledgeDb()) {
+      retrievers.push(createCustomKnowledgeRetriever());
+    }
 
     if (hasCloudMultimodalDb()) {
       retrievers.push(createCloudMultimodalRetriever());
@@ -30,6 +38,10 @@ export function createRetriever(): Retriever {
 
   if (process.env.RAG_PROVIDER === "cloud-multimodal") {
     return createCloudMultimodalRetriever();
+  }
+
+  if (process.env.RAG_PROVIDER === "custom-knowledge") {
+    return createCustomKnowledgeRetriever();
   }
 
   if (process.env.RAG_PROVIDER === "synop-local") {
