@@ -3,6 +3,8 @@ export type ChatRole = "user" | "assistant";
 export type ChatMessage = {
   role: ChatRole;
   content: string;
+  imageName?: string;
+  imageUrl?: string;
 };
 
 export type RagSource = {

@@ -70,7 +70,7 @@ textarea {
 .brand p,
 .sources h2,
 .source-card p,
-.message p {
+.message-body p {
   margin: 0;
 }
 
@@ -183,13 +183,18 @@ textarea {
   text-transform: uppercase;
 }
 
-.message p {
+.message-body {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
   box-shadow: var(--shadow);
+  display: grid;
+  gap: 12px;
   line-height: 1.65;
   padding: 16px;
+}
+
+.message-body p {
   white-space: pre-wrap;
 }
 
@@ -197,9 +202,17 @@ textarea {
   align-self: flex-end;
 }
 
-.message.user p {
+.message.user .message-body {
   border-color: #9fd3d1;
   background: #e7f6f4;
+}
+
+.message-image {
+  display: block;
+  width: min(420px, 100%);
+  max-height: 320px;
+  border-radius: 8px;
+  object-fit: contain;
 }
 
 .typing {
@@ -210,7 +223,7 @@ textarea {
 }
 
 .typing svg,
-.composer button svg {
+.send-button.loading svg {
   animation: spin 1s linear infinite;
 }
 
@@ -224,7 +237,7 @@ textarea {
 
 .composer {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 48px;
+  grid-template-columns: minmax(0, 1fr) 48px 48px;
   gap: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -242,6 +255,48 @@ textarea {
   line-height: 1.5;
 }
 
+.file-input {
+  display: none;
+}
+
+.image-preview {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 64px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 8px;
+}
+
+.image-preview img {
+  width: 64px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.image-preview span {
+  overflow: hidden;
+  color: #344054;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-preview button {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.image-preview button:hover {
+  background: #eef2f6;
+}
+
 .composer button {
   display: grid;
   width: 48px;
@@ -255,9 +310,29 @@ textarea {
   cursor: pointer;
 }
 
+.attach-button {
+  background: #eef5f4;
+  color: var(--accent-dark);
+}
+
+.attach-button:hover {
+  background: #d9eeeb;
+}
+
 .composer button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
+}
+
+.composer .image-preview button {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.composer .image-preview button:hover {
+  background: #eef2f6;
 }
 
 @keyframes spin {

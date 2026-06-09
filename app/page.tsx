@@ -1,11 +1,23 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import { FormEvent, useMemo, useRef, useState } from "react";
-import { BookOpen, Database, Loader2, Send, Sparkles } from "lucide-react";
+import {
+  BookOpen,
+  Database,
+  ImagePlus,
+  Loader2,
+  Send,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 type Message = {
   role: "user" | "assistant";
   content: string;
+  imageName?: string;
+  imageUrl?: string;
 };
 
 type Source = {
@@ -27,23 +39,91 @@ export default function Home() {
   const [sources, setSources] = useState<Source[]>([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [selectedImage, setSelectedImage] = useState<{
+    file: File;
+    previewUrl: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const canSubmit = input.trim().length > 0 && !isLoading;
+  const canSubmit =
+    (input.trim().length > 0 || Boolean(selectedImage)) && !isLoading;
   const sourceCount = useMemo(() => sources.length, [sources]);
+
+  function removeSelectedImage() {
+    if (selectedImage) {
+      URL.revokeObjectURL(selectedImage.previewUrl);
+    }
+
+    setSelectedImage(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  function onImageSelected(file?: File) {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("กรุณาเลือกไฟล์รูปภาพ");
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setError("ไฟล์รูปต้องไม่เกิน 8 MB");
+      return;
+    }
+
+    removeSelectedImage();
+    setError("");
+    setSelectedImage({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    });
+  }
+
+  async function uploadSelectedImage() {
+    if (!selectedImage) return undefined;
+
+    const formData = new FormData();
+    formData.append("file", selectedImage.file);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "อัปโหลดรูปไม่สำเร็จ");
+    }
+
+    return data.image as { name: string; url: string };
+  }
 
   async function sendMessage(nextInput?: string) {
     const content = (nextInput ?? input).trim();
-    if (!content || isLoading) return;
+    if ((!content && !selectedImage) || isLoading) return;
 
-    const nextMessages: Message[] = [...messages, { role: "user", content }];
-    setMessages(nextMessages);
-    setInput("");
-    setError("");
     setIsLoading(true);
+    setError("");
 
     try {
+      const image = await uploadSelectedImage();
+      const userMessage: Message = {
+        role: "user",
+        content: content || "ช่วยวิเคราะห์รูปนี้ให้หน่อย",
+        imageName: image?.name,
+        imageUrl: image?.url,
+      };
+      const nextMessages: Message[] = [...messages, userMessage];
+
+      setMessages(nextMessages);
+      setInput("");
+      removeSelectedImage();
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -124,7 +204,16 @@ export default function Home() {
           {messages.map((message, index) => (
             <div className={`message ${message.role}`} key={index}>
               <span>{message.role === "assistant" ? "AI" : "You"}</span>
-              <p>{message.content}</p>
+              <div className="message-body">
+                {message.imageUrl && (
+                  <img
+                    alt={message.imageName || "Uploaded image"}
+                    className="message-image"
+                    src={message.imageUrl}
+                  />
+                )}
+                <p>{message.content}</p>
+              </div>
             </div>
           ))}
           {isLoading && (
@@ -141,6 +230,19 @@ export default function Home() {
         {error && <div className="error">{error}</div>}
 
         <form className="composer" onSubmit={onSubmit}>
+          {selectedImage && (
+            <div className="image-preview">
+              <img alt={selectedImage.file.name} src={selectedImage.previewUrl} />
+              <span>{selectedImage.file.name}</span>
+              <button
+                aria-label="Remove image"
+                onClick={removeSelectedImage}
+                type="button"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          )}
           <textarea
             ref={inputRef}
             aria-label="Message"
@@ -155,7 +257,27 @@ export default function Home() {
             rows={2}
             value={input}
           />
-          <button aria-label="Send message" disabled={!canSubmit} type="submit">
+          <input
+            accept="image/gif,image/jpeg,image/png,image/webp"
+            className="file-input"
+            onChange={(event) => onImageSelected(event.target.files?.[0])}
+            ref={fileInputRef}
+            type="file"
+          />
+          <button
+            aria-label="Attach image"
+            className="attach-button"
+            onClick={() => fileInputRef.current?.click()}
+            type="button"
+          >
+            <ImagePlus size={20} />
+          </button>
+          <button
+            aria-label="Send message"
+            className={isLoading ? "send-button loading" : "send-button"}
+            disabled={!canSubmit}
+            type="submit"
+          >
             {isLoading ? <Loader2 size={20} /> : <Send size={20} />}
           </button>
         </form>

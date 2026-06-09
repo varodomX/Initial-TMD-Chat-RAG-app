@@ -131,4 +131,22 @@ data/chat_logs/chat_messages.jsonl
 ```
 
 ไฟล์นี้ถูก ignore จาก git เพื่อไม่ให้ข้อมูลสนทนาหรือข้อมูลส่วนตัวหลุดขึ้น repository. บน Vercel filesystem ไม่ถาวร ถ้าต้องเก็บ production logs ให้ย้ายไปฐานข้อมูล เช่น Supabase/Postgres.
+
+## Image Uploads
+
+หน้าแชตรองรับการแนบรูปภาพ `png`, `jpg`, `webp`, `gif` ขนาดไม่เกิน 8 MB ต่อไฟล์ รูปจะถูกเก็บไว้ที่:
+
+```text
+data/uploads/
+```
+
+และเรียกดูผ่าน URL แบบนี้:
+
+```text
+/api/uploads/<file-name>
+```
+
+เมื่อใช้ `AI_PROVIDER=openai` รูปจะถูกแปลงเป็น data URL ฝั่ง server แล้วส่งเข้า OpenAI vision model พร้อมข้อความล่าสุด. โฟลเดอร์ `data/uploads/` ถูก ignore จาก git แล้ว
+
+บน Vercel filesystem ไม่เหมาะกับการเก็บรูปถาวร ถ้าจะใช้งาน production ควรย้าย upload storage ไป S3, Supabase Storage หรือ Vercel Blob.
 # Initial-TMD-Chat-RAG-app

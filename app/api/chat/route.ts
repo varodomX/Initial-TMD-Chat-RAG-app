@@ -1,13 +1,48 @@
 import { NextResponse } from "next/server";
+import type {
+  ResponseInput,
+  ResponseInputMessageContentList,
+} from "openai/resources/responses/responses";
 import { appendChatLog } from "@/lib/chat-log";
 import { chatModel, getOpenAI } from "@/lib/openai";
 import { createRetriever, formatSourcesForPrompt } from "@/lib/rag/retriever";
 import type { ChatMessage, RagSource } from "@/lib/rag/types";
+import { readUploadAsDataUrl } from "@/lib/uploads";
 
 export const runtime = "nodejs";
 
 function latestUserMessage(messages: ChatMessage[]) {
   return [...messages].reverse().find((message) => message.role === "user");
+}
+
+async function toOpenAIInputMessage(
+  message: ChatMessage,
+): Promise<ResponseInput[number]> {
+  if (!message.imageUrl) {
+    return {
+      role: message.role,
+      content: message.content,
+    };
+  }
+
+  const content: ResponseInputMessageContentList = [
+    {
+      type: "input_text",
+      text:
+        message.content ||
+        "วิเคราะห์รูปนี้ และตอบเป็นภาษาไทยโดยอิงบริบทเอกสารที่เกี่ยวข้องถ้ามี",
+    },
+    {
+      type: "input_image",
+      detail: "auto",
+      image_url: await readUploadAsDataUrl(message.imageUrl),
+    },
+  ];
+
+  return {
+    role: message.role,
+    content,
+  };
 }
 
 function readOutputText(response: unknown) {
@@ -87,16 +122,17 @@ export async function POST(request: Request) {
     const messages = body.messages ?? [];
     latest = latestUserMessage(messages);
 
-    if (!latest?.content?.trim()) {
+    if (!latest?.content?.trim() && !latest?.imageUrl) {
       return NextResponse.json(
-        { error: "A user message is required." },
+        { error: "A user message or image is required." },
         { status: 400 },
       );
     }
 
     const retriever = createRetriever();
+    const retrievalQuery = latest.content.trim() || latest.imageName || "รูปภาพ";
     const sources = await retriever.search(
-      latest.content,
+      retrievalQuery,
       Number(process.env.RAG_MATCH_COUNT || 6),
     );
     const context = formatSourcesForPrompt(sources);
@@ -129,23 +165,24 @@ export async function POST(request: Request) {
 
     try {
       const openai = getOpenAI();
+      const inputMessages = await Promise.all(
+        messages.map((message) => toOpenAIInputMessage(message)),
+      );
+      const input: ResponseInput = [
+        {
+          role: "system",
+          content:
+            "You are TMD Chat, a concise Thai-first assistant. Answer from the provided RAG context when it is relevant. If the user sends an image, analyze the image carefully and connect it to the retrieved context when useful. If the context is insufficient, say what is missing and avoid inventing facts. Cite sources inline as [1], [2] when using retrieved context.",
+        },
+        {
+          role: "developer",
+          content: `Retrieved context:\n\n${context}`,
+        },
+        ...inputMessages,
+      ];
       const response = await openai.responses.create({
         model: chatModel,
-        input: [
-          {
-            role: "system",
-            content:
-              "You are TMD Chat, a concise Thai-first assistant. Answer from the provided RAG context when it is relevant. If the context is insufficient, say what is missing and avoid inventing facts. Cite sources inline as [1], [2] when using retrieved context.",
-          },
-          {
-            role: "developer",
-            content: `Retrieved context:\n\n${context}`,
-          },
-          ...messages.map((message) => ({
-            role: message.role,
-            content: message.content,
-          })),
-        ],
+        input,
       });
 
       const assistantMessage: ChatMessage = {

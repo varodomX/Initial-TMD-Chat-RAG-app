@@ -6,3 +6,4 @@ node_modules
 dist
 coverage
 data/chat_logs/
+data/uploads/
