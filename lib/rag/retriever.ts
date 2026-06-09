@@ -1,0 +1,42 @@
+import { createMockRetriever } from "./mock";
+import { createPgVectorRetriever } from "./pgvector";
+import {
+  createSynopLocalRetriever,
+  hasSynopLocalVectorDb,
+} from "./synop-local";
+import type { Retriever } from "./types";
+
+export function createRetriever(): Retriever {
+  if (process.env.RAG_PROVIDER === "synop-local") {
+    return createSynopLocalRetriever();
+  }
+
+  if (process.env.DATABASE_URL) {
+    return createPgVectorRetriever();
+  }
+
+  if (hasSynopLocalVectorDb()) {
+    return createSynopLocalRetriever();
+  }
+
+  return createMockRetriever();
+}
+
+export function formatSourcesForPrompt(
+  sources: Awaited<ReturnType<Retriever["search"]>>,
+) {
+  if (!sources.length) {
+    return "No relevant documents were found.";
+  }
+
+  return sources
+    .map((source, index) => {
+      const title =
+        typeof source.metadata.title === "string"
+          ? source.metadata.title
+          : source.id;
+
+      return `[${index + 1}] ${title}\n${source.content}`;
+    })
+    .join("\n\n");
+}
