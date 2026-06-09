@@ -57,6 +57,34 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("tr")) score += 6;
 
   if (
+    normalizedQuery.includes("ฟ้าคะนอง") ||
+    normalizedQuery.includes("พายุฟ้าคะนอง") ||
+    normalizedQuery.includes("thunderstorm")
+  ) {
+    score += 10;
+  }
+
+  if (
+    normalizedQuery.includes("35") ||
+    normalizedQuery.includes("15.35") ||
+    normalizedQuery.includes("15:35") ||
+    normalizedQuery.includes("15.55") ||
+    normalizedQuery.includes("15:55") ||
+    normalizedQuery.includes("15.25") ||
+    normalizedQuery.includes("15:25")
+  ) {
+    score += 10;
+  }
+
+  if (normalizedQuery.includes("95") || normalizedQuery.includes("97")) {
+    score += 6;
+  }
+
+  if (normalizedQuery.includes("29")) {
+    score += 6;
+  }
+
+  if (
     normalizedQuery.includes("ช่องว่าง") ||
     normalizedQuery.includes("ยังว่าง") ||
     normalizedQuery.includes("ไม่มีข้อมูล") ||
