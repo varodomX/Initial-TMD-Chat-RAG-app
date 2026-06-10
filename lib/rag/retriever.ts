@@ -79,13 +79,13 @@ export function formatSourcesForPrompt(
   }
 
   return sources
-    .map((source, index) => {
+    .map((source) => {
       const title =
         typeof source.metadata.title === "string"
           ? source.metadata.title
           : source.id;
 
-      return `[${index + 1}] ${title}\n${source.content}`;
+      return `Source: ${title}\n${source.content}`;
     })
     .join("\n\n");
 }

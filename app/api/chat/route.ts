@@ -74,13 +74,13 @@ function isQuotaError(error: unknown) {
   return error.message.includes("429") || error.message.includes("quota");
 }
 
-function sourceLabel(source: RagSource, index: number) {
+function sourceLabel(source: RagSource) {
   const title =
     typeof source.metadata.title === "string" ? source.metadata.title : source.id;
   const page =
     typeof source.metadata.page === "number" ? ` หน้า ${source.metadata.page}` : "";
 
-  return `[${index + 1}] ${title}${page}`;
+  return `${title}${page}`;
 }
 
 function createExtractiveAnswer(sources: RagSource[], reason?: string) {
@@ -93,11 +93,11 @@ function createExtractiveAnswer(sources: RagSource[], reason?: string) {
       .join("\n");
   }
 
-  const excerpts = sources.slice(0, 3).map((source, index) => {
+  const excerpts = sources.slice(0, 3).map((source) => {
     const compact = source.content.replace(/\s+/g, " ").trim();
     const excerpt = compact.length > 700 ? `${compact.slice(0, 700)}...` : compact;
 
-    return `${sourceLabel(source, index)}\n${excerpt}`;
+    return `${sourceLabel(source)}\n${excerpt}`;
   });
 
   return [
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "You are TMD Chat, a concise Thai-first assistant. Answer from the provided RAG context when it is relevant. If the user sends an image, analyze the image carefully and connect it to the retrieved context when useful. If the user asks to check an observation table, prioritize ww/W1/W2 correctness over other columns. Report by observation time with: recorded ww/W1/W2, status (correct / needs review / incorrect), reason, and suggested correction if any. If a ww/W1/W2 entry is wrong and the available data is sufficient, state clearly that it is wrong, where it is wrong, the observation time, why the recorded value is wrong, and what value it should be changed to. Use needs review only when the image/data is unclear or missing required evidence. Do not flag blank future observation slots as errors. If the context is insufficient, say what is missing and avoid inventing facts. Cite sources inline as [1], [2] when using retrieved context.",
+            "You are TMD Chat, a concise Thai-first assistant. Answer from the provided RAG context when it is relevant. If the user sends an image, analyze the image carefully and connect it to the retrieved context when useful. If the user asks to check an observation table, prioritize ww/W1/W2 correctness over other columns. Report by observation time with: recorded ww/W1/W2, status (correct / needs review / incorrect), reason, and suggested correction if any. If a ww/W1/W2 entry is wrong and the available data is sufficient, state clearly that it is wrong, where it is wrong, the observation time, why the recorded value is wrong, and what value it should be changed to. Use needs review only when the image/data is unclear or missing required evidence. Do not flag blank future observation slots as errors. If the context is insufficient, say what is missing and avoid inventing facts. Do not show source citations or bracketed reference numbers such as [1], [2], or [6] in the final answer.",
         },
         {
           role: "developer",

@@ -178,10 +178,9 @@ export default function Home() {
         <section className="sources">
           <h2>Sources</h2>
           {sources.length ? (
-            sources.map((source, index) => (
+            sources.map((source) => (
               <article className="source-card" key={source.id}>
                 <div>
-                  <span>[{index + 1}]</span>
                   <strong>
                     {typeof source.metadata.title === "string"
                       ? source.metadata.title
