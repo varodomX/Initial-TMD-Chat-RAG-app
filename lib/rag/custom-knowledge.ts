@@ -52,6 +52,15 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("ww")) score += 12;
   if (normalizedQuery.includes("รหัส")) score += 6;
   if (normalizedQuery.includes("ฝนตก")) score += 8;
+  if (normalizedQuery.includes("หลายรหัส") || normalizedQuery.includes("หลายปรากฏการณ์")) {
+    score += 10;
+  }
+  if (normalizedQuery.includes("3 ชั่วโมง") || normalizedQuery.includes("3ชม")) {
+    score += 8;
+  }
+  if (normalizedQuery.includes("21") || normalizedQuery.includes("20-29")) {
+    score += 6;
+  }
   if (normalizedQuery.includes("present")) score += 6;
   if (normalizedQuery.includes("past")) score += 6;
   if (normalizedQuery.includes("w1") || normalizedQuery.includes("w2")) score += 8;
@@ -117,6 +126,19 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     normalizedQuery.includes("ฝน")
   ) {
     score += 20;
+  }
+
+  if (
+    record.id === "custom_multi_weather_ww_w1_w2_from_source_001" &&
+    (normalizedQuery.includes("ww") ||
+      normalizedQuery.includes("w1") ||
+      normalizedQuery.includes("w2")) &&
+    (normalizedQuery.includes("หลาย") ||
+      normalizedQuery.includes("3 ชั่วโมง") ||
+      normalizedQuery.includes("21") ||
+      normalizedQuery.includes("17"))
+  ) {
+    score += 22;
   }
 
   return score;
