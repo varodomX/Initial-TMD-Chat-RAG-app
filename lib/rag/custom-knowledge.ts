@@ -52,6 +52,14 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("ww")) score += 12;
   if (normalizedQuery.includes("รหัส")) score += 6;
   if (normalizedQuery.includes("ฝนตก")) score += 8;
+  if (
+    normalizedQuery.includes("ลงระบบ") ||
+    normalizedQuery.includes("กรอก") ||
+    normalizedQuery.includes("แนะนำ") ||
+    normalizedQuery.includes("ควรลง")
+  ) {
+    score += 12;
+  }
   if (normalizedQuery.includes("หลายรหัส") || normalizedQuery.includes("หลายปรากฏการณ์")) {
     score += 10;
   }
@@ -59,6 +67,9 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     score += 8;
   }
   if (normalizedQuery.includes("21") || normalizedQuery.includes("20-29")) {
+    score += 6;
+  }
+  if (normalizedQuery.includes("61") || normalizedQuery.includes("00.20")) {
     score += 6;
   }
   if (normalizedQuery.includes("present")) score += 6;
@@ -139,6 +150,20 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("17"))
   ) {
     score += 22;
+  }
+
+  if (
+    record.id === "custom_recommend_weather_entries_for_system_001" &&
+    (normalizedQuery.includes("ลงระบบ") ||
+      normalizedQuery.includes("กรอก") ||
+      normalizedQuery.includes("แนะนำ") ||
+      normalizedQuery.includes("ควรลง") ||
+      normalizedQuery.includes("61")) &&
+    (normalizedQuery.includes("ฟ้าคะนอง") ||
+      normalizedQuery.includes("ฝนธรรมดา") ||
+      normalizedQuery.includes("17"))
+  ) {
+    score += 24;
   }
 
   return score;
