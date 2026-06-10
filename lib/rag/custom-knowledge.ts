@@ -72,6 +72,28 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("61") || normalizedQuery.includes("00.20")) {
     score += 6;
   }
+  if (
+    normalizedQuery.includes("01") ||
+    normalizedQuery.includes("02") ||
+    normalizedQuery.includes("03")
+  ) {
+    score += 6;
+  }
+  if (
+    normalizedQuery.includes("เมฆทั้งหมด") ||
+    normalizedQuery.includes("จำนวนเมฆ") ||
+    normalizedQuery.includes("ท้องฟ้า")
+  ) {
+    score += 10;
+  }
+  if (
+    normalizedQuery.includes("เพิ่มขึ้น") ||
+    normalizedQuery.includes("ลดลง") ||
+    normalizedQuery.includes("ไม่เปลี่ยน") ||
+    normalizedQuery.includes("3 ชั่วโมงที่แล้ว")
+  ) {
+    score += 8;
+  }
   if (normalizedQuery.includes("present")) score += 6;
   if (normalizedQuery.includes("past")) score += 6;
   if (normalizedQuery.includes("w1") || normalizedQuery.includes("w2")) score += 8;
@@ -164,6 +186,22 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("17"))
   ) {
     score += 24;
+  }
+
+  if (
+    record.id === "custom_ww_01_02_03_cloud_change_001" &&
+    (normalizedQuery.includes("เมฆ") ||
+      normalizedQuery.includes("ท้องฟ้า") ||
+      normalizedQuery.includes("01") ||
+      normalizedQuery.includes("02") ||
+      normalizedQuery.includes("03")) &&
+    (normalizedQuery.includes("ww") ||
+      normalizedQuery.includes("รหัส") ||
+      normalizedQuery.includes("เพิ่ม") ||
+      normalizedQuery.includes("ลด") ||
+      normalizedQuery.includes("เท่าเดิม"))
+  ) {
+    score += 26;
   }
 
   return score;
