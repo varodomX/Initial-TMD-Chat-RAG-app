@@ -74,6 +74,44 @@ function isQuotaError(error: unknown) {
   return error.message.includes("429") || error.message.includes("quota");
 }
 
+function isAmbiguousWwRainQuestion(message: string) {
+  const normalized = message.toLowerCase();
+  const asksForWw =
+    normalized.includes("ww") ||
+    normalized.includes("รหัส") ||
+    normalized.includes("ให้รหัส");
+  const mentionsRain =
+    normalized.includes("ฝน") || normalized.includes("rain");
+  const hasSpecificRainType =
+    normalized.includes("ฝนธรรมดา") ||
+    normalized.includes("ฝนฟ้าคะนอง") ||
+    normalized.includes("พายุฟ้าคะนอง") ||
+    normalized.includes("ฟ้าคะนอง") ||
+    normalized.includes("ฝนซู่") ||
+    normalized.includes("ฝนละออง") ||
+    normalized.includes("ฝนโปรย") ||
+    normalized.includes("ลูกเห็บ") ||
+    normalized.includes("thunder") ||
+    normalized.includes("shower");
+  const hasRainAmount =
+    normalized.includes("ปริมาณ") ||
+    normalized.includes("มม") ||
+    normalized.includes("mm") ||
+    normalized.includes("เบา") ||
+    normalized.includes("ปานกลาง") ||
+    normalized.includes("หนัก");
+
+  return asksForWw && mentionsRain && !hasSpecificRainType && !hasRainAmount;
+}
+
+function createWwClarificationMessage(): ChatMessage {
+  return {
+    role: "assistant",
+    content:
+      "ข้อมูลยังไม่พอให้ตัดสินรหัส ww ครับ ขอรายละเอียดเพิ่มหน่อย:\n\n- เป็นฝนประเภทไหน: ฝนธรรมดา, ฝนซู่, ฝนละออง, ฝนโปรย หรือฝนฟ้าคะนอง\n- ปริมาณฝนเท่าไหร่ หรืออย่างน้อยความแรง: เบา, ปานกลาง, หนัก\n- รอบเวลาตรวจคือกี่โมง เช่น 16:00\n- ตอนตรวจยังตกอยู่ไหม หรือหยุดก่อนตรวจแล้ว",
+  };
+}
+
 function sourceLabel(source: RagSource) {
   const title =
     typeof source.metadata.title === "string" ? source.metadata.title : source.id;
@@ -129,6 +167,24 @@ export async function POST(request: Request) {
       );
     }
 
+    if (latest.content && isAmbiguousWwRainQuestion(latest.content)) {
+      const assistantMessage = createWwClarificationMessage();
+
+      await appendChatLog({
+        conversationId,
+        createdAt: new Date().toISOString(),
+        userMessage: latest,
+        assistantMessage,
+        sources: [],
+        mode: "clarification",
+      });
+
+      return NextResponse.json({
+        message: assistantMessage,
+        sources: [],
+      });
+    }
+
     const retriever = createRetriever();
     const retrievalQuery = latest.content.trim() || latest.imageName || "รูปภาพ";
     const sources = await retriever.search(
@@ -172,7 +228,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "You are TMD Chat, a concise Thai-first assistant. Answer from the provided RAG context when it is relevant. If the user sends an image, analyze the image carefully and connect it to the retrieved context when useful. If the user asks to check an observation table, prioritize ww/W1/W2 correctness over other columns. Report by observation time with: recorded ww/W1/W2, status (correct / needs review / incorrect), reason, and suggested correction if any. If a ww/W1/W2 entry is wrong and the available data is sufficient, state clearly that it is wrong, where it is wrong, the observation time, why the recorded value is wrong, and what value it should be changed to. Use needs review only when the image/data is unclear or missing required evidence. Do not flag blank future observation slots as errors. If the context is insufficient, say what is missing and avoid inventing facts. Do not show source citations or bracketed reference numbers such as [1], [2], or [6] in the final answer.",
+            "You are TMD Chat, a concise Thai-first assistant. Answer from the provided RAG context when it is relevant. If the user sends an image, analyze the image carefully and connect it to the retrieved context when useful. If the user asks to check an observation table, prioritize ww/W1/W2 correctness over other columns. Report by observation time with: recorded ww/W1/W2, status (correct / needs review / incorrect), reason, and suggested correction if any. If a ww/W1/W2 entry is wrong and the available data is sufficient, state clearly that it is wrong, where it is wrong, the observation time, why the recorded value is wrong, and what value it should be changed to. If a question asks for a ww code but the rain details are ambiguous, ask for the rain type, rain amount or intensity, observation time, and whether the rain was still occurring at observation time before giving a code. Use needs review only when the image/data is unclear or missing required evidence. Do not flag blank future observation slots as errors. If the context is insufficient, say what is missing and avoid inventing facts. Do not show source citations or bracketed reference numbers such as [1], [2], or [6] in the final answer.",
         },
         {
           role: "developer",

@@ -50,6 +50,8 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   }
 
   if (normalizedQuery.includes("ww")) score += 12;
+  if (normalizedQuery.includes("รหัส")) score += 6;
+  if (normalizedQuery.includes("ฝนตก")) score += 8;
   if (normalizedQuery.includes("present")) score += 6;
   if (normalizedQuery.includes("past")) score += 6;
   if (normalizedQuery.includes("w1") || normalizedQuery.includes("w2")) score += 8;
@@ -107,6 +109,14 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     normalizedQuery.includes("บันทึก")
   ) {
     score += 6;
+  }
+
+  if (
+    record.id === "custom_ambiguous_ww_rain_question_001" &&
+    (normalizedQuery.includes("ww") || normalizedQuery.includes("รหัส")) &&
+    normalizedQuery.includes("ฝน")
+  ) {
+    score += 20;
   }
 
   return score;

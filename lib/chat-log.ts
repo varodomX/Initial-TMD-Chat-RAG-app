@@ -9,7 +9,7 @@ export type ChatLogEntry = {
   assistantMessage?: ChatMessage;
   sources?: RagSource[];
   error?: string;
-  mode: "openai" | "extractive" | "quota-fallback";
+  mode: "openai" | "extractive" | "quota-fallback" | "clarification";
 };
 
 const logDir = path.join(
