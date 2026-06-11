@@ -27,6 +27,28 @@ type Source = {
   score: number;
 };
 
+async function parseJsonResponse(response: Response) {
+  const text = await response.text();
+
+  if (!text) {
+    return {
+      error: response.ok
+        ? "เซิร์ฟเวอร์ตอบกลับว่างเปล่า"
+        : `เซิร์ฟเวอร์ตอบกลับว่างเปล่า (${response.status})`,
+    };
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {
+      error: response.ok
+        ? "เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON"
+        : text.slice(0, 300) || `เซิร์ฟเวอร์ตอบกลับไม่ใช่ JSON (${response.status})`,
+    };
+  }
+}
+
 export default function Home() {
   const [conversationId] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([
@@ -93,7 +115,7 @@ export default function Home() {
       method: "POST",
       body: formData,
     });
-    const data = await response.json();
+    const data = await parseJsonResponse(response);
 
     if (!response.ok) {
       throw new Error(data.error || "อัปโหลดรูปไม่สำเร็จ");
@@ -128,7 +150,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversationId, messages: nextMessages }),
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || "ส่งข้อความไม่สำเร็จ");

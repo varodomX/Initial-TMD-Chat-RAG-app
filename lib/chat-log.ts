@@ -20,6 +20,13 @@ const logDir = path.join(
 const logFile = path.join(logDir, "chat_messages.jsonl");
 
 export async function appendChatLog(entry: ChatLogEntry) {
-  await mkdir(logDir, { recursive: true });
-  await appendFile(logFile, `${JSON.stringify(entry)}\n`, "utf8");
+  try {
+    await mkdir(logDir, { recursive: true });
+    await appendFile(logFile, `${JSON.stringify(entry)}\n`, "utf8");
+  } catch (error) {
+    console.warn(
+      "Chat log was skipped:",
+      error instanceof Error ? error.message : error,
+    );
+  }
 }
