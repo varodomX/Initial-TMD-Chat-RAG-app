@@ -52,6 +52,17 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("ww")) score += 12;
   if (normalizedQuery.includes("รหัส")) score += 6;
   if (normalizedQuery.includes("ฝนตก")) score += 8;
+  if (normalizedQuery.includes("ตารางฝน") || normalizedQuery.includes("ตารางเวลาฝน")) {
+    score += 10;
+  }
+  if (normalizedQuery.includes("หมายเหตุลมฟ้าอากาศ")) score += 10;
+  if (
+    normalizedQuery.includes("รูป") ||
+    normalizedQuery.includes("ภาพ") ||
+    normalizedQuery.includes("หน้าจอ")
+  ) {
+    score += 6;
+  }
   if (
     normalizedQuery.includes("ลงระบบ") ||
     normalizedQuery.includes("กรอก") ||
@@ -69,7 +80,12 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (normalizedQuery.includes("21") || normalizedQuery.includes("20-29")) {
     score += 6;
   }
-  if (normalizedQuery.includes("61") || normalizedQuery.includes("00.20")) {
+  if (
+    normalizedQuery.includes("60") ||
+    normalizedQuery.includes("61") ||
+    normalizedQuery.includes("00.20") ||
+    normalizedQuery.includes("00:20")
+  ) {
     score += 6;
   }
   if (
@@ -202,6 +218,26 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("เท่าเดิม"))
   ) {
     score += 26;
+  }
+
+  if (
+    record.id === "custom_pdf_training_ww_w1_w2_examples_001" &&
+    (normalizedQuery.includes("ww") ||
+      normalizedQuery.includes("w1") ||
+      normalizedQuery.includes("w2") ||
+      normalizedQuery.includes("รหัส")) &&
+    (normalizedQuery.includes("ตารางฝน") ||
+      normalizedQuery.includes("หมายเหตุ") ||
+      normalizedQuery.includes("รูป") ||
+      normalizedQuery.includes("ภาพ") ||
+      normalizedQuery.includes("หน้าจอ") ||
+      normalizedQuery.includes("60") ||
+      normalizedQuery.includes("61") ||
+      normalizedQuery.includes("95") ||
+      normalizedQuery.includes("13") ||
+      normalizedQuery.includes("21"))
+  ) {
+    score += 28;
   }
 
   return score;
