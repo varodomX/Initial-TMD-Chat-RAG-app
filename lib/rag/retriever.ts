@@ -20,6 +20,14 @@ import {
 import type { Retriever } from "./types";
 
 export function createRetriever(): Retriever {
+  if (process.env.RAG_PROVIDER === "pgvector" && process.env.DATABASE_URL) {
+    return createPgVectorRetriever();
+  }
+
+  if (process.env.VERCEL === "1" && process.env.DATABASE_URL) {
+    return createPgVectorRetriever();
+  }
+
   if (process.env.RAG_PROVIDER === "local-all") {
     const retrievers: Retriever[] = [];
 
@@ -53,10 +61,22 @@ export function createRetriever(): Retriever {
   }
 
   if (process.env.RAG_PROVIDER === "khonkaen-local") {
+    if (!hasKhonKaenLocalVectorDb()) {
+      return hasCustomKnowledgeDb()
+        ? createCustomKnowledgeRetriever()
+        : createMockRetriever();
+    }
+
     return createKhonKaenLocalRetriever();
   }
 
   if (process.env.RAG_PROVIDER === "synop-local") {
+    if (!hasSynopLocalVectorDb()) {
+      return hasCustomKnowledgeDb()
+        ? createCustomKnowledgeRetriever()
+        : createMockRetriever();
+    }
+
     return createSynopLocalRetriever();
   }
 

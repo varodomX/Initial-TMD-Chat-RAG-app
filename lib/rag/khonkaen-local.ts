@@ -24,6 +24,10 @@ const dbPath = path.join(
 const searchScript = path.join(dbPath, "search.py");
 const vectorDbPath = path.join(dbPath, "vector_db.joblib");
 
+function canRunLocalPythonRetriever() {
+  return process.env.VERCEL !== "1" || process.env.ALLOW_LOCAL_PYTHON_RAG === "1";
+}
+
 function getPythonBin() {
   const configuredPython = process.env.PYTHON_BIN;
 
@@ -35,7 +39,7 @@ function getPythonBin() {
 }
 
 export function hasKhonKaenLocalVectorDb() {
-  return existsSync(searchScript) && existsSync(vectorDbPath);
+  return canRunLocalPythonRetriever() && existsSync(searchScript) && existsSync(vectorDbPath);
 }
 
 export function createKhonKaenLocalRetriever(): Retriever {

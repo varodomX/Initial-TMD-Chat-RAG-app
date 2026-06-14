@@ -22,8 +22,12 @@ const dbPath = path.join(
 );
 const queryScript = path.join(dbPath, "query.py");
 
+function canRunLocalPythonRetriever() {
+  return process.env.VERCEL !== "1" || process.env.ALLOW_LOCAL_PYTHON_RAG === "1";
+}
+
 export function hasSynopLocalVectorDb() {
-  return existsSync(queryScript);
+  return canRunLocalPythonRetriever() && existsSync(queryScript);
 }
 
 export function createSynopLocalRetriever(): Retriever {
