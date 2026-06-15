@@ -291,8 +291,12 @@ export async function POST(request: Request) {
       });
     }
   } catch (error) {
-    const message =
+    const rawMessage =
       error instanceof Error ? error.message : "Unexpected server error.";
+    const message =
+      rawMessage.includes("invalid model") || rawMessage.includes("model ID")
+        ? `${rawMessage} (requested model: ${chatModel})`
+        : rawMessage;
 
     if (latest) {
       await appendChatLog({
