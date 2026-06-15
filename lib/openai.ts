@@ -4,14 +4,14 @@ function resolveChatModel() {
   const configuredModel = process.env.OPENAI_CHAT_MODEL?.trim();
 
   if (!configuredModel) {
-    return "gpt-5.4-mini";
+    return "gpt-5.5";
   }
 
   return configuredModel;
 }
 
 export const chatModel = resolveChatModel();
-export const fallbackChatModel = "gpt-5.4-mini";
+export const fallbackChatModel = "gpt-5.5";
 export const embeddingModel =
   process.env.OPENAI_EMBEDDING_MODEL || "text-embedding-3-small";
 
