@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "ingest:pgvector": "node scripts/ingest-jsonl-to-pgvector.mjs",
     "lint": "eslint ."
   },
   "dependencies": {

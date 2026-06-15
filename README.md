@@ -94,6 +94,42 @@ curl -X POST http://localhost:3000/api/ingest \
   }'
 ```
 
+## Upload Local Vector DB To Supabase
+
+ใช้กับ Supabase/Postgres ที่เปิด `pgvector` แล้ว และ table ชื่อ `rag_documents`.
+สคริปต์นี้จะอ่านไฟล์ `chunks.jsonl` ใน `data/` สร้าง OpenAI embeddings แล้ว upsert เข้า Supabase ให้เอง.
+
+ตั้งค่า `.env.local` ก่อน:
+
+```bash
+OPENAI_API_KEY=sk-proj-your-key
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+DATABASE_URL=postgresql://postgres.xxx:password@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+RAG_PROVIDER=pgvector
+RAG_TABLE=rag_documents
+RAG_MATCH_COUNT=6
+```
+
+ทดสอบจำนวนเอกสารที่จะอัปโหลด:
+
+```bash
+npm run ingest:pgvector -- --dry-run
+```
+
+อัปโหลดฐานความรู้เริ่มต้นทั้งหมด:
+
+```bash
+npm run ingest:pgvector
+```
+
+หรือเลือกไฟล์เอง:
+
+```bash
+npm run ingest:pgvector -- data/custom_knowledge_vector_db/chunks.jsonl data/khonkaen_station_vector_db/chunks.jsonl
+```
+
+หลังอัปโหลดแล้ว ให้ตั้ง Environment Variables บน Vercel เป็นค่าเดียวกัน โดยเฉพาะ `DATABASE_URL`, `RAG_PROVIDER=pgvector`, `RAG_TABLE=rag_documents`, `OPENAI_API_KEY`, `OPENAI_EMBEDDING_MODEL`.
+
 ## Vector Database Adapter
 
 ค่าเริ่มต้นอยู่ที่ `lib/rag/pgvector.ts`. ถ้าฐาน vector ที่มีอยู่เป็น Pinecone, Qdrant, Weaviate หรือ Supabase ให้เพิ่ม adapter ใหม่ที่ implement `Retriever` ใน `lib/rag/types.ts` แล้วสลับใน `lib/rag/retriever.ts`.
