@@ -1,7 +1,8 @@
 import OpenAI from "openai";
 
 function resolveChatModel() {
-  const configuredModel = process.env.OPENAI_CHAT_MODEL?.trim();
+  const configuredModel =
+    process.env.OPENAI_CHAT_MODEL?.trim() || process.env.OPENAI_MODEL?.trim();
 
   if (!configuredModel) {
     return "gpt-5.5";

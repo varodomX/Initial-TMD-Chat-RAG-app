@@ -24,11 +24,14 @@ npm run dev
 
 ```bash
 OPENAI_API_KEY=sk-proj-your-key
+OPENAI_MODEL=gpt-5-mini
 OPENAI_CHAT_MODEL=gpt-5.5
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 AI_PROVIDER=openai
 DATABASE_URL=postgres://user:password@localhost:5432/tmd_chat
 ```
+
+`OPENAI_CHAT_MODEL` จะมี priority สูงกว่า `OPENAI_MODEL`. ถ้าใส่ทั้งคู่ ระบบจะใช้ `OPENAI_CHAT_MODEL`.
 
 ถ้าไม่มี quota หรือยังไม่ต้องการเรียก OpenAI API ให้ใช้โหมดดึงคำตอบจาก vector database โดยตรง:
 
