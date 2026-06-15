@@ -24,7 +24,7 @@ npm run dev
 
 ```bash
 OPENAI_API_KEY=sk-proj-your-key
-OPENAI_CHAT_MODEL=gpt-4o-mini
+OPENAI_CHAT_MODEL=gpt-5.4-mini
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 AI_PROVIDER=openai
 DATABASE_URL=postgres://user:password@localhost:5432/tmd_chat

@@ -318,7 +318,7 @@ export async function POST(request: Request) {
       error instanceof Error ? error.message : "Unexpected server error.";
     const message =
       rawMessage.includes("invalid model") || rawMessage.includes("model ID")
-        ? `${rawMessage} (requested model: ${chatModel}, fallback: ${fallbackChatModel})`
+        ? `${rawMessage} (requested model: ${chatModel}, fallback: ${fallbackChatModel}). Check that this OpenAI project/API key has access to the configured model in the OpenAI Models page.`
         : rawMessage;
 
     if (latest) {
