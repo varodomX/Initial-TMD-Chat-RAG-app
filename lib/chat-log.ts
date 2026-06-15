@@ -12,6 +12,7 @@ export type ChatLogEntry = {
   mode: "openai" | "extractive" | "quota-fallback" | "clarification";
 };
 
+
 const logDir = path.join(
   /*turbopackIgnore: true*/ process.cwd(),
   "data",
