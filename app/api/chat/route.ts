@@ -4,7 +4,7 @@ import type {
   ResponseInputMessageContentList,
 } from "openai/resources/responses/responses";
 import { appendChatLog } from "@/lib/chat-log";
-import { chatModel, getOpenAI } from "@/lib/openai";
+import { chatModel, fallbackChatModel, getOpenAI } from "@/lib/openai";
 import { createRetriever, formatSourcesForPrompt } from "@/lib/rag/retriever";
 import type { ChatMessage, RagSource } from "@/lib/rag/types";
 import { readUploadAsDataUrl } from "@/lib/uploads";
@@ -72,6 +72,14 @@ function isQuotaError(error: unknown) {
   }
 
   return error.message.includes("429") || error.message.includes("quota");
+}
+
+function isInvalidModelError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return error.message.includes("invalid model") || error.message.includes("model ID");
 }
 
 function isAmbiguousWwRainQuestion(message: string) {
@@ -240,10 +248,25 @@ export async function POST(request: Request) {
         },
         ...inputMessages,
       ];
-      const response = await openai.responses.create({
-        model: chatModel,
-        input,
-      });
+      let requestedModel = chatModel;
+      let response;
+
+      try {
+        response = await openai.responses.create({
+          model: requestedModel,
+          input,
+        });
+      } catch (error) {
+        if (!isInvalidModelError(error) || requestedModel === fallbackChatModel) {
+          throw error;
+        }
+
+        requestedModel = fallbackChatModel;
+        response = await openai.responses.create({
+          model: requestedModel,
+          input,
+        });
+      }
 
       const assistantMessage: ChatMessage = {
         role: "assistant",
@@ -295,7 +318,7 @@ export async function POST(request: Request) {
       error instanceof Error ? error.message : "Unexpected server error.";
     const message =
       rawMessage.includes("invalid model") || rawMessage.includes("model ID")
-        ? `${rawMessage} (requested model: ${chatModel})`
+        ? `${rawMessage} (requested model: ${chatModel}, fallback: ${fallbackChatModel})`
         : rawMessage;
 
     if (latest) {

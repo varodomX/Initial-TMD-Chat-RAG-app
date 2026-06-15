@@ -3,14 +3,19 @@ import OpenAI from "openai";
 function resolveChatModel() {
   const configuredModel = process.env.OPENAI_CHAT_MODEL?.trim();
 
-  if (!configuredModel || configuredModel.startsWith("gpt-5.5")) {
-    return "gpt-5.4-mini";
+  if (
+    !configuredModel ||
+    configuredModel.startsWith("gpt-5.5") ||
+    configuredModel.startsWith("gpt-5.4")
+  ) {
+    return "gpt-4o-mini";
   }
 
   return configuredModel;
 }
 
 export const chatModel = resolveChatModel();
+export const fallbackChatModel = "gpt-4o-mini";
 export const embeddingModel =
   process.env.OPENAI_EMBEDDING_MODEL || "text-embedding-3-small";
 
