@@ -22,6 +22,10 @@ const extensionToMime: Record<string, string> = {
   webp: "image/webp",
 };
 
+function isServerlessRuntime() {
+  return process.env.VERCEL === "1";
+}
+
 export type StoredUpload = {
   id: string;
   name: string;
@@ -50,6 +54,10 @@ export function uploadPath(name: string) {
   return path.join(uploadDir, safeName);
 }
 
+function toDataUrl(mimeType: string, bytes: Buffer) {
+  return `data:${mimeType};base64,${bytes.toString("base64")}`;
+}
+
 export async function saveImageUpload(file: File): Promise<StoredUpload> {
   if (!isAllowedImageType(file.type)) {
     throw new Error("รองรับเฉพาะไฟล์รูปภาพ png, jpg, webp หรือ gif");
@@ -59,12 +67,21 @@ export async function saveImageUpload(file: File): Promise<StoredUpload> {
     throw new Error("ไฟล์รูปต้องไม่เกิน 8 MB");
   }
 
-  await mkdir(uploadDir, { recursive: true });
-
   const extension = mimeToExtension[file.type];
   const id = `${crypto.randomUUID()}.${extension}`;
   const bytes = Buffer.from(await file.arrayBuffer());
 
+  if (isServerlessRuntime()) {
+    return {
+      id,
+      name: file.name,
+      mimeType: file.type,
+      size: file.size,
+      url: toDataUrl(file.type, bytes),
+    };
+  }
+
+  await mkdir(uploadDir, { recursive: true });
   await writeFile(uploadPath(id), bytes);
 
   return {
@@ -77,10 +94,14 @@ export async function saveImageUpload(file: File): Promise<StoredUpload> {
 }
 
 export async function readUploadAsDataUrl(url: string) {
+  if (url.startsWith("data:")) {
+    return url;
+  }
+
   const fileName = path.basename(url);
   const filePath = uploadPath(fileName);
   const buffer = await readFile(filePath);
   const mimeType = mimeTypeForUploadName(fileName);
 
-  return `data:${mimeType};base64,${buffer.toString("base64")}`;
+  return toDataUrl(mimeType, buffer);
 }
