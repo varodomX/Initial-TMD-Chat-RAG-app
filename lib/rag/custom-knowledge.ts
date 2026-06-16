@@ -136,7 +136,12 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     score += 10;
   }
 
-  if (normalizedQuery.includes("95") || normalizedQuery.includes("97")) {
+  if (
+    normalizedQuery.includes("91") ||
+    normalizedQuery.includes("92") ||
+    normalizedQuery.includes("95") ||
+    normalizedQuery.includes("97")
+  ) {
     score += 6;
   }
 
@@ -294,8 +299,11 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("w2") ||
       normalizedQuery.includes("79192") ||
       normalizedQuery.includes("79122") ||
+      normalizedQuery.includes("79222") ||
       normalizedQuery.includes("9122") ||
+      normalizedQuery.includes("9222") ||
       normalizedQuery.includes("ww91") ||
+      normalizedQuery.includes("ww92") ||
       normalizedQuery.includes("09.00") ||
       normalizedQuery.includes("09:00") ||
       normalizedQuery.includes("09 utc") ||
@@ -305,7 +313,10 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("ไม่ซ้ำ") ||
       normalizedQuery.includes("ซ้ำ") ||
       normalizedQuery.includes("ฟ้าคะนอง") ||
-      normalizedQuery.includes("ฝนธรรมดา"))
+      normalizedQuery.includes("ฝนธรรมดา") ||
+      normalizedQuery.includes("เบา") ||
+      normalizedQuery.includes("ปานกลาง") ||
+      normalizedQuery.includes("หนัก"))
   ) {
     score += 46;
   }
