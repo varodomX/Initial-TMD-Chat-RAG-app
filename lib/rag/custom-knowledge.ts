@@ -170,6 +170,32 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   }
 
   if (
+    normalizedQuery.includes("เวลาหลัก") ||
+    normalizedQuery.includes("เวลารอง") ||
+    normalizedQuery.includes("0700") ||
+    normalizedQuery.includes("1300") ||
+    normalizedQuery.includes("1900") ||
+    normalizedQuery.includes("0100") ||
+    normalizedQuery.includes("1000") ||
+    normalizedQuery.includes("1600") ||
+    normalizedQuery.includes("2200") ||
+    normalizedQuery.includes("0400")
+  ) {
+    score += 14;
+  }
+
+  if (
+    normalizedQuery.includes("09.00") ||
+    normalizedQuery.includes("09:00") ||
+    normalizedQuery.includes("09 utc") ||
+    normalizedQuery.includes("79192") ||
+    normalizedQuery.includes("9196") ||
+    normalizedQuery.includes("6162")
+  ) {
+    score += 16;
+  }
+
+  if (
     record.id === "custom_ambiguous_ww_rain_question_001" &&
     (normalizedQuery.includes("ww") || normalizedQuery.includes("รหัส")) &&
     normalizedQuery.includes("ฝน")
@@ -238,6 +264,32 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("21"))
   ) {
     score += 28;
+  }
+
+  if (
+    record.id === "custom_w1w2_main_secondary_observation_windows_001" &&
+    (normalizedQuery.includes("w1") ||
+      normalizedQuery.includes("w2") ||
+      normalizedQuery.includes("past") ||
+      normalizedQuery.includes("เวลาหลัก") ||
+      normalizedQuery.includes("เวลารอง"))
+  ) {
+    score += 34;
+  }
+
+  if (
+    record.id === "custom_w1w2_priority_examples_79192_9196_001" &&
+    (normalizedQuery.includes("w1") ||
+      normalizedQuery.includes("w2") ||
+      normalizedQuery.includes("79192") ||
+      normalizedQuery.includes("9196") ||
+      normalizedQuery.includes("09.00") ||
+      normalizedQuery.includes("09:00") ||
+      normalizedQuery.includes("09 utc") ||
+      normalizedQuery.includes("ฟ้าคะนอง") ||
+      normalizedQuery.includes("ฝนธรรมดา"))
+  ) {
+    score += 36;
   }
 
   return score;
