@@ -172,6 +172,16 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (
     normalizedQuery.includes("เวลาหลัก") ||
     normalizedQuery.includes("เวลารอง") ||
+    normalizedQuery.includes("utc") ||
+    normalizedQuery.includes("utc+7") ||
+    normalizedQuery.includes("0000") ||
+    normalizedQuery.includes("0300") ||
+    normalizedQuery.includes("0600") ||
+    normalizedQuery.includes("0900") ||
+    normalizedQuery.includes("1200") ||
+    normalizedQuery.includes("1500") ||
+    normalizedQuery.includes("1800") ||
+    normalizedQuery.includes("2100") ||
     normalizedQuery.includes("0700") ||
     normalizedQuery.includes("1300") ||
     normalizedQuery.includes("1900") ||
@@ -290,6 +300,20 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("ฝนธรรมดา"))
   ) {
     score += 36;
+  }
+
+  if (
+    record.id === "custom_synop_utc_to_thai_observation_times_001" &&
+    (normalizedQuery.includes("utc") ||
+      normalizedQuery.includes("เวลาไทย") ||
+      normalizedQuery.includes("เวลาหลัก") ||
+      normalizedQuery.includes("เวลารอง") ||
+      normalizedQuery.includes("0300") ||
+      normalizedQuery.includes("1000") ||
+      normalizedQuery.includes("10:00") ||
+      normalizedQuery.includes("10.00"))
+  ) {
+    score += 40;
   }
 
   return score;
