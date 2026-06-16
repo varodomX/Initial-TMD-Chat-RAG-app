@@ -199,7 +199,8 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     normalizedQuery.includes("09:00") ||
     normalizedQuery.includes("09 utc") ||
     normalizedQuery.includes("79192") ||
-    normalizedQuery.includes("9196") ||
+    normalizedQuery.includes("79122") ||
+    normalizedQuery.includes("9122") ||
     normalizedQuery.includes("6162")
   ) {
     score += 16;
@@ -288,18 +289,25 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   }
 
   if (
-    record.id === "custom_w1w2_priority_examples_79192_9196_001" &&
+    record.id === "custom_w1w2_priority_examples_79192_79122_001" &&
     (normalizedQuery.includes("w1") ||
       normalizedQuery.includes("w2") ||
       normalizedQuery.includes("79192") ||
-      normalizedQuery.includes("9196") ||
+      normalizedQuery.includes("79122") ||
+      normalizedQuery.includes("9122") ||
+      normalizedQuery.includes("ww91") ||
       normalizedQuery.includes("09.00") ||
       normalizedQuery.includes("09:00") ||
       normalizedQuery.includes("09 utc") ||
+      normalizedQuery.includes("06.00") ||
+      normalizedQuery.includes("06:00") ||
+      normalizedQuery.includes("06 utc") ||
+      normalizedQuery.includes("ไม่ซ้ำ") ||
+      normalizedQuery.includes("ซ้ำ") ||
       normalizedQuery.includes("ฟ้าคะนอง") ||
       normalizedQuery.includes("ฝนธรรมดา"))
   ) {
-    score += 36;
+    score += 46;
   }
 
   if (
