@@ -172,44 +172,53 @@ export default function Home() {
   }
 
   return (
-    <main className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <span className="brand-mark">
-            <Sparkles size={18} />
+    <main className="grid min-h-screen bg-[#f5f7fb] text-slate-900 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <aside className="flex min-h-0 flex-col gap-5 border-b border-slate-200 bg-white/90 p-5 lg:h-screen lg:border-b-0 lg:border-r lg:p-6">
+        <div className="flex items-center gap-3">
+          <span className="grid size-12 place-items-center rounded-lg bg-teal-700 text-white shadow-sm">
+            <Sparkles size={22} />
           </span>
           <div>
-            <h1>TMD Chat</h1>
-            <p>OpenAI + RAG Vector DB</p>
+            <h1 className="text-xl font-bold leading-tight text-slate-950">
+              TMD Chat
+            </h1>
+            <p className="text-sm text-slate-500">OpenAI + RAG Vector DB</p>
           </div>
         </div>
 
-        <section className="status-panel">
-          <div className="status-row">
-            <Database size={18} />
+        <section className="grid gap-3 rounded-lg border border-slate-200 bg-teal-50/70 p-4">
+          <div className="grid grid-cols-[24px_1fr_auto] items-center gap-3 text-sm text-slate-600">
+            <Database className="text-teal-700" size={19} />
             <span>Retriever</span>
-            <strong>{sourceCount ? `${sourceCount} hits` : "ready"}</strong>
+            <strong className="font-semibold text-slate-950">
+              {sourceCount ? `${sourceCount} hits` : "ready"}
+            </strong>
           </div>
-          <div className="status-row">
-            <BookOpen size={18} />
+          <div className="grid grid-cols-[24px_1fr_auto] items-center gap-3 text-sm text-slate-600">
+            <BookOpen className="text-teal-700" size={19} />
             <span>Mode</span>
-            <strong>RAG</strong>
+            <strong className="font-semibold text-slate-950">RAG</strong>
           </div>
         </section>
 
-        <section className="sources">
-          <h2>Sources</h2>
+        <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
+          <h2 className="text-xs font-bold uppercase text-slate-500">Sources</h2>
           {sources.length ? (
             sources.map((source) => (
-              <article className="source-card" key={source.id}>
+              <article
+                className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3 shadow-sm"
+                key={source.id}
+              >
                 <div>
-                  <strong>
+                  <strong className="text-sm text-slate-900">
                     {typeof source.metadata.title === "string"
                       ? source.metadata.title
                       : source.id}
                   </strong>
                 </div>
-                <p>{source.content}</p>
+                <p className="source-content text-sm leading-6 text-slate-600">
+                  {source.content}
+                </p>
                 {typeof source.metadata.imageUrl === "string" && (
                   <img
                     alt={
@@ -217,56 +226,87 @@ export default function Home() {
                         ? source.metadata.title
                         : source.id
                     }
-                    className="source-image"
+                    className="max-h-32 w-full rounded-lg object-cover"
                     src={source.metadata.imageUrl}
                   />
                 )}
-                <small>score {source.score.toFixed(2)}</small>
+                <small className="text-xs text-slate-400">
+                  score {source.score.toFixed(2)}
+                </small>
               </article>
             ))
           ) : (
-            <p className="empty">Sources from the latest answer will appear here.</p>
+            <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-500">
+              Sources from the latest answer will appear here.
+            </p>
           )}
         </section>
       </aside>
 
-      <section className="chat">
-        <div className="chat-scroll">
+      <section className="grid min-h-[70vh] min-w-0 grid-rows-[minmax(0,1fr)_auto_auto] gap-4 p-4 sm:p-6 lg:h-screen">
+        <div className="flex min-h-0 flex-col gap-4 overflow-auto rounded-lg border border-slate-200 bg-white/45 p-3 shadow-sm sm:p-5">
           {messages.map((message, index) => (
-            <div className={`message ${message.role}`} key={index}>
-              <span>{message.role === "assistant" ? "AI" : "You"}</span>
-              <div className="message-body">
+            <div
+              className={`grid max-w-3xl gap-2 ${
+                message.role === "user" ? "ml-auto justify-items-end" : ""
+              }`}
+              key={index}
+            >
+              <span className="text-xs font-bold uppercase text-slate-500">
+                {message.role === "assistant" ? "AI" : "You"}
+              </span>
+              <div
+                className={`grid gap-3 rounded-lg border p-4 leading-7 shadow-sm ${
+                  message.role === "user"
+                    ? "border-teal-200 bg-teal-50 text-slate-900"
+                    : "border-slate-200 bg-white text-slate-900"
+                }`}
+              >
                 {message.imageUrl && (
                   <img
                     alt={message.imageName || "Uploaded image"}
-                    className="message-image"
+                    className="max-h-80 w-full max-w-[420px] rounded-lg object-contain"
                     src={message.imageUrl}
                   />
                 )}
-                <p>{message.content}</p>
+                <p className="whitespace-pre-wrap">{message.content}</p>
               </div>
             </div>
           ))}
           {isLoading && (
-            <div className="message assistant">
-              <span>AI</span>
-              <p className="typing">
-                <Loader2 size={16} />
+            <div className="grid max-w-3xl gap-2">
+              <span className="text-xs font-bold uppercase text-slate-500">AI</span>
+              <p className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-500 shadow-sm">
+                <Loader2 className="animate-spin text-teal-700" size={16} />
                 กำลังค้นเอกสารและร่างคำตอบ
               </p>
             </div>
           )}
         </div>
 
-        {error && <div className="error">{error}</div>}
+        {error && (
+          <div className="rounded-lg border border-orange-300 bg-orange-50 px-4 py-3 text-sm text-orange-700">
+            {error}
+          </div>
+        )}
 
-        <form className="composer" onSubmit={onSubmit}>
+        <form
+          className="grid grid-cols-[minmax(0,1fr)_48px_48px] gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-lg shadow-slate-200/70"
+          onSubmit={onSubmit}
+        >
           {selectedImage && (
-            <div className="image-preview">
-              <img alt={selectedImage.file.name} src={selectedImage.previewUrl} />
-              <span>{selectedImage.file.name}</span>
+            <div className="col-span-full grid grid-cols-[64px_minmax(0,1fr)_36px] items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-2">
+              <img
+                alt={selectedImage.file.name}
+                className="h-12 w-16 rounded-md object-cover"
+                src={selectedImage.previewUrl}
+              />
+              <span className="truncate text-sm text-slate-600">
+                {selectedImage.file.name}
+              </span>
               <button
                 aria-label="Remove image"
+                className="grid size-9 place-items-center rounded-md text-slate-500 transition hover:bg-slate-200 hover:text-slate-900"
                 onClick={removeSelectedImage}
                 type="button"
               >
@@ -277,6 +317,7 @@ export default function Home() {
           <textarea
             ref={inputRef}
             aria-label="Message"
+            className="min-h-14 max-h-44 resize-y border-0 bg-transparent py-3 leading-6 text-slate-900 outline-none placeholder:text-slate-400"
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey) {
@@ -290,14 +331,14 @@ export default function Home() {
           />
           <input
             accept="image/gif,image/jpeg,image/png,image/webp"
-            className="file-input"
+            className="hidden"
             onChange={(event) => onImageSelected(event.target.files?.[0])}
             ref={fileInputRef}
             type="file"
           />
           <button
             aria-label="Attach image"
-            className="attach-button"
+            className="grid size-12 place-items-center self-end rounded-lg bg-teal-50 text-teal-700 transition hover:bg-teal-100 disabled:cursor-not-allowed disabled:opacity-45"
             onClick={() => fileInputRef.current?.click()}
             type="button"
           >
@@ -305,11 +346,15 @@ export default function Home() {
           </button>
           <button
             aria-label="Send message"
-            className={isLoading ? "send-button loading" : "send-button"}
+            className="grid size-12 place-items-center self-end rounded-lg bg-teal-700 text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-45"
             disabled={!canSubmit}
             type="submit"
           >
-            {isLoading ? <Loader2 size={20} /> : <Send size={20} />}
+            {isLoading ? (
+              <Loader2 className="animate-spin" size={20} />
+            ) : (
+              <Send size={20} />
+            )}
           </button>
         </form>
       </section>
