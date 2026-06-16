@@ -4,6 +4,14 @@ import type { RagDocumentInput, Retriever } from "./types";
 
 let pool: Pool | undefined;
 
+function shouldUseSsl(connectionString: string) {
+  return (
+    connectionString.includes("supabase.co") ||
+    connectionString.includes("pooler.supabase.com") ||
+    process.env.PGSSLMODE === "require"
+  );
+}
+
 function getPool() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is not configured.");
@@ -12,6 +20,9 @@ function getPool() {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.DATABASE_URL,
+      ssl: shouldUseSsl(process.env.DATABASE_URL)
+        ? { rejectUnauthorized: false }
+        : undefined,
     });
   }
 

@@ -13,7 +13,7 @@ const DEFAULT_PATHS = [
   "data/cloud_atlas_th_vector_db/cloud_chunks_th.jsonl",
 ];
 
-function loadEnvFile(filePath) {
+function loadEnvFile(filePath, { override = false } = {}) {
   if (!fs.existsSync(filePath)) return;
 
   for (const line of fs.readFileSync(filePath, "utf8").split(/\r?\n/)) {
@@ -24,7 +24,7 @@ function loadEnvFile(filePath) {
     if (!match) continue;
 
     const [, key, rawValue] = match;
-    if (process.env[key]) continue;
+    if (process.env[key] && !override) continue;
 
     process.env[key] = rawValue
       .replace(/^"(.*)"$/, "$1")
@@ -109,8 +109,16 @@ function requireSafeTableName(tableName) {
   }
 }
 
+function shouldUseSsl(connectionString) {
+  return (
+    connectionString.includes("supabase.co") ||
+    connectionString.includes("pooler.supabase.com") ||
+    process.env.PGSSLMODE === "require"
+  );
+}
+
 async function main() {
-  loadEnvFile(path.resolve(".env.local"));
+  loadEnvFile(path.resolve(".env.local"), { override: true });
   loadEnvFile(path.resolve(".env"));
 
   const { dryRun, paths } = parseArgs();
@@ -135,7 +143,12 @@ async function main() {
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: shouldUseSsl(process.env.DATABASE_URL)
+      ? { rejectUnauthorized: false }
+      : undefined,
+  });
 
   try {
     await ensureSchema(pool, tableName);
