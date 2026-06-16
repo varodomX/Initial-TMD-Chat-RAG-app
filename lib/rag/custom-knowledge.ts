@@ -324,6 +324,21 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     score += 40;
   }
 
+  if (
+    record.id === "custom_synop_respect_question_time_unit_001" &&
+    (normalizedQuery.includes("utc") ||
+      normalizedQuery.includes("เวลาไทย") ||
+      normalizedQuery.includes("น.ไทย") ||
+      normalizedQuery.includes("เวลาตามโจทย์") ||
+      normalizedQuery.includes("แปลงเวลา") ||
+      normalizedQuery.includes("06:00") ||
+      normalizedQuery.includes("06.00") ||
+      normalizedQuery.includes("05:20") ||
+      normalizedQuery.includes("05.20"))
+  ) {
+    score += 44;
+  }
+
   return score;
 }
 
