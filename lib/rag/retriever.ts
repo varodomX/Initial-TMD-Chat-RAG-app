@@ -19,36 +19,81 @@ import {
 } from "./synop-local";
 import type { Retriever } from "./types";
 
+function createLocalAllRetriever() {
+  const retrievers: Retriever[] = [];
+
+  if (hasCustomKnowledgeDb()) {
+    retrievers.push(createCustomKnowledgeRetriever());
+  }
+
+  if (hasCloudMultimodalDb()) {
+    retrievers.push(createCloudMultimodalRetriever());
+  }
+
+  if (hasKhonKaenLocalVectorDb()) {
+    retrievers.push(createKhonKaenLocalRetriever());
+  }
+
+  if (hasSynopLocalVectorDb()) {
+    retrievers.push(createSynopLocalRetriever());
+  }
+
+  if (!retrievers.length) {
+    return undefined;
+  }
+
+  return createCompositeRetriever(retrievers);
+}
+
+function createResilientRetriever(primary: Retriever, fallback?: Retriever): Retriever {
+  return {
+    async search(query, limit) {
+      try {
+        return await primary.search(query, limit);
+      } catch (error) {
+        console.warn(
+          "Primary retriever failed; falling back:",
+          error instanceof Error ? error.message : error,
+        );
+
+        if (fallback) {
+          return fallback.search(query, limit);
+        }
+
+        return [];
+      }
+    },
+
+    async upsert(documents) {
+      if (!primary.upsert) {
+        throw new Error("Primary retriever does not support upsert.");
+      }
+
+      return primary.upsert(documents);
+    },
+  };
+}
+
 export function createRetriever(): Retriever {
   if (process.env.RAG_PROVIDER === "pgvector" && process.env.DATABASE_URL) {
-    return createPgVectorRetriever();
+    return createResilientRetriever(
+      createPgVectorRetriever(),
+      createLocalAllRetriever() ?? createMockRetriever(),
+    );
   }
 
   if (process.env.VERCEL === "1" && process.env.DATABASE_URL) {
-    return createPgVectorRetriever();
+    return createResilientRetriever(
+      createPgVectorRetriever(),
+      createLocalAllRetriever() ?? createMockRetriever(),
+    );
   }
 
   if (process.env.RAG_PROVIDER === "local-all") {
-    const retrievers: Retriever[] = [];
+    const localRetriever = createLocalAllRetriever();
 
-    if (hasCustomKnowledgeDb()) {
-      retrievers.push(createCustomKnowledgeRetriever());
-    }
-
-    if (hasCloudMultimodalDb()) {
-      retrievers.push(createCloudMultimodalRetriever());
-    }
-
-    if (hasKhonKaenLocalVectorDb()) {
-      retrievers.push(createKhonKaenLocalRetriever());
-    }
-
-    if (hasSynopLocalVectorDb()) {
-      retrievers.push(createSynopLocalRetriever());
-    }
-
-    if (retrievers.length) {
-      return createCompositeRetriever(retrievers);
+    if (localRetriever) {
+      return localRetriever;
     }
   }
 
@@ -81,7 +126,10 @@ export function createRetriever(): Retriever {
   }
 
   if (process.env.DATABASE_URL) {
-    return createPgVectorRetriever();
+    return createResilientRetriever(
+      createPgVectorRetriever(),
+      createLocalAllRetriever() ?? createMockRetriever(),
+    );
   }
 
   if (hasSynopLocalVectorDb()) {
