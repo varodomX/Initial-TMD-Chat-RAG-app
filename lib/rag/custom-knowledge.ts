@@ -95,8 +95,11 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (
     normalizedQuery.includes("60") ||
     normalizedQuery.includes("61") ||
+    normalizedQuery.includes("62") ||
     normalizedQuery.includes("00.20") ||
-    normalizedQuery.includes("00:20")
+    normalizedQuery.includes("00:20") ||
+    normalizedQuery.includes("02.45") ||
+    normalizedQuery.includes("02:45")
   ) {
     score += 6;
   }
@@ -227,6 +230,10 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     normalizedQuery.includes("09 utc") ||
     normalizedQuery.includes("79192") ||
     normalizedQuery.includes("79122") ||
+    normalizedQuery.includes("72162") ||
+    normalizedQuery.includes("w1 = 6") ||
+    normalizedQuery.includes("w1=6") ||
+    normalizedQuery.includes("2122") ||
     normalizedQuery.includes("9122") ||
     normalizedQuery.includes("6162")
   ) {
@@ -301,11 +308,38 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("หน้าจอ") ||
       normalizedQuery.includes("60") ||
       normalizedQuery.includes("61") ||
+      normalizedQuery.includes("62") ||
       normalizedQuery.includes("95") ||
       normalizedQuery.includes("13") ||
-      normalizedQuery.includes("21"))
+      normalizedQuery.includes("21") ||
+      normalizedQuery.includes("72162") ||
+      normalizedQuery.includes("2122") ||
+      normalizedQuery.includes("02.45") ||
+      normalizedQuery.includes("02:45"))
   ) {
     score += 28;
+  }
+
+  if (
+    record.id === "custom_secondary_time_rain_ww21_w1w2_62_72162_001" &&
+    (normalizedQuery.includes("0300") ||
+      normalizedQuery.includes("03.00") ||
+      normalizedQuery.includes("03:00") ||
+      normalizedQuery.includes("เวลารอง") ||
+      normalizedQuery.includes("secondary")) &&
+    (normalizedQuery.includes("ฝน") ||
+      normalizedQuery.includes("ฝนธรรมดา") ||
+      normalizedQuery.includes("rain") ||
+      normalizedQuery.includes("21") ||
+      normalizedQuery.includes("62") ||
+      normalizedQuery.includes("72162") ||
+      normalizedQuery.includes("2122") ||
+      normalizedQuery.includes("02.45") ||
+      normalizedQuery.includes("02:45") ||
+      normalizedQuery.includes("w1=6") ||
+      normalizedQuery.includes("w1 = 6"))
+  ) {
+    score += 70;
   }
 
   if (

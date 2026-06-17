@@ -76,17 +76,27 @@ function createResilientRetriever(primary: Retriever, fallback?: Retriever): Ret
 
 export function createRetriever(): Retriever {
   if (process.env.RAG_PROVIDER === "pgvector" && process.env.DATABASE_URL) {
-    return createResilientRetriever(
+    const pgvectorRetriever = createResilientRetriever(
       createPgVectorRetriever(),
       createLocalAllRetriever() ?? createMockRetriever(),
     );
+    const localRetriever = createLocalAllRetriever();
+
+    return localRetriever
+      ? createCompositeRetriever([localRetriever, pgvectorRetriever])
+      : pgvectorRetriever;
   }
 
   if (process.env.VERCEL === "1" && process.env.DATABASE_URL) {
-    return createResilientRetriever(
+    const pgvectorRetriever = createResilientRetriever(
       createPgVectorRetriever(),
       createLocalAllRetriever() ?? createMockRetriever(),
     );
+    const localRetriever = createLocalAllRetriever();
+
+    return localRetriever
+      ? createCompositeRetriever([localRetriever, pgvectorRetriever])
+      : pgvectorRetriever;
   }
 
   if (process.env.RAG_PROVIDER === "local-all") {
