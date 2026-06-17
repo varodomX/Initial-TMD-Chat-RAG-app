@@ -86,6 +86,15 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   }
   if (
     normalizedQuery.includes("17") ||
+    normalizedQuery.includes("ww17") ||
+    normalizedQuery.includes("91-99") ||
+    normalizedQuery.includes("ไม่มีฝน") ||
+    normalizedQuery.includes("ไม่มีหยาด") ||
+    normalizedQuery.includes("หยาดน้ำฟ้า") ||
+    normalizedQuery.includes("หยาดน้ํา") ||
+    normalizedQuery.includes("ได้ยินเสียง") ||
+    normalizedQuery.includes("เสียงฟ้าร้อง") ||
+    normalizedQuery.includes("ฟ้าร้อง") ||
     normalizedQuery.includes("21") ||
     normalizedQuery.includes("20-29") ||
     normalizedQuery.includes("20-49")
@@ -154,8 +163,12 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (
     normalizedQuery.includes("91") ||
     normalizedQuery.includes("92") ||
+    normalizedQuery.includes("93") ||
+    normalizedQuery.includes("94") ||
     normalizedQuery.includes("95") ||
-    normalizedQuery.includes("97")
+    normalizedQuery.includes("96") ||
+    normalizedQuery.includes("97") ||
+    normalizedQuery.includes("99")
   ) {
     score += 6;
   }
@@ -192,6 +205,14 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   if (
     normalizedQuery.includes("เวลาหลัก") ||
     normalizedQuery.includes("เวลารอง") ||
+    normalizedQuery.includes("12.2.6.6") ||
+    normalizedQuery.includes("6 ชั่วโมง") ||
+    normalizedQuery.includes("3 ชั่วโมง") ||
+    normalizedQuery.includes("2 ชั่วโมง") ||
+    normalizedQuery.includes("ทุก 2 ชั่วโมง") ||
+    normalizedQuery.includes("w1w2 และ ww") ||
+    normalizedQuery.includes("w1w2+ww") ||
+    normalizedQuery.includes("w1w2 + ww") ||
     normalizedQuery.includes("ครอบคลุม") ||
     normalizedQuery.includes("เต็มช่วง") ||
     normalizedQuery.includes("71799") ||
@@ -228,11 +249,17 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     normalizedQuery.includes("09.00") ||
     normalizedQuery.includes("09:00") ||
     normalizedQuery.includes("09 utc") ||
+    normalizedQuery.includes("79599") ||
+    normalizedQuery.includes("ww95") ||
     normalizedQuery.includes("79192") ||
     normalizedQuery.includes("79122") ||
+    normalizedQuery.includes("79162") ||
     normalizedQuery.includes("72162") ||
+    normalizedQuery.includes("76162") ||
     normalizedQuery.includes("w1 = 6") ||
     normalizedQuery.includes("w1=6") ||
+    normalizedQuery.includes("w1 = 9") ||
+    normalizedQuery.includes("w1=9") ||
     normalizedQuery.includes("2122") ||
     normalizedQuery.includes("9122") ||
     normalizedQuery.includes("6162")
@@ -313,11 +340,76 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("13") ||
       normalizedQuery.includes("21") ||
       normalizedQuery.includes("72162") ||
+      normalizedQuery.includes("76162") ||
       normalizedQuery.includes("2122") ||
       normalizedQuery.includes("02.45") ||
       normalizedQuery.includes("02:45"))
   ) {
     score += 28;
+  }
+
+  if (
+    record.id === "custom_w1w2_rain60_69_thunder9_window_priority_001" &&
+    (normalizedQuery.includes("w1") ||
+      normalizedQuery.includes("w2") ||
+      normalizedQuery.includes("past") ||
+      normalizedQuery.includes("12.2.6.6") ||
+      normalizedQuery.includes("6 ชั่วโมง") ||
+      normalizedQuery.includes("3 ชั่วโมง") ||
+      normalizedQuery.includes("2 ชั่วโมง") ||
+      normalizedQuery.includes("ทุก 2 ชั่วโมง") ||
+      normalizedQuery.includes("w1w2 และ ww") ||
+      normalizedQuery.includes("w1w2+ww") ||
+      normalizedQuery.includes("w1w2 + ww") ||
+      normalizedQuery.includes("เวลาหลัก") ||
+      normalizedQuery.includes("เวลารอง") ||
+      normalizedQuery.includes("03.00") ||
+      normalizedQuery.includes("03:00") ||
+      normalizedQuery.includes("0300") ||
+      normalizedQuery.includes("0900") ||
+      normalizedQuery.includes("16.00") ||
+      normalizedQuery.includes("16:00") ||
+      normalizedQuery.includes("1600") ||
+      normalizedQuery.includes("13.00") ||
+      normalizedQuery.includes("13:00") ||
+      normalizedQuery.includes("15.00") ||
+      normalizedQuery.includes("15:00") ||
+      normalizedQuery.includes("13.00-15.00") ||
+      normalizedQuery.includes("13:00-15:00") ||
+      normalizedQuery.includes("15.00-16.00") ||
+      normalizedQuery.includes("15:00-16:00") ||
+      normalizedQuery.includes("1 ชั่วโมง") ||
+      normalizedQuery.includes("ชั่วโมงการตรวจ") ||
+      normalizedQuery.includes("ทำการตรวจ") ||
+      normalizedQuery.includes("utc") ||
+      normalizedQuery.includes("00.05") ||
+      normalizedQuery.includes("00:05") ||
+      normalizedQuery.includes("76162") ||
+      normalizedQuery.includes("72162")) &&
+    (normalizedQuery.includes("60") ||
+      normalizedQuery.includes("61") ||
+      normalizedQuery.includes("62") ||
+      normalizedQuery.includes("63") ||
+      normalizedQuery.includes("64") ||
+      normalizedQuery.includes("65") ||
+      normalizedQuery.includes("66") ||
+      normalizedQuery.includes("67") ||
+      normalizedQuery.includes("68") ||
+      normalizedQuery.includes("69") ||
+      normalizedQuery.includes("60-69") ||
+      normalizedQuery.includes("ฝน") ||
+      normalizedQuery.includes("ฝนธรรมดา") ||
+      normalizedQuery.includes("ฟ้าคะนอง") ||
+      normalizedQuery.includes("พายุฟ้าคะนอง") ||
+      normalizedQuery.includes("95") ||
+      normalizedQuery.includes("97") ||
+      normalizedQuery.includes("99") ||
+      normalizedQuery.includes("w1=6") ||
+      normalizedQuery.includes("w1 = 6") ||
+      normalizedQuery.includes("w1=9") ||
+      normalizedQuery.includes("w1 = 9"))
+  ) {
+    score += 82;
   }
 
   if (
@@ -347,6 +439,14 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     (normalizedQuery.includes("w1") ||
       normalizedQuery.includes("w2") ||
       normalizedQuery.includes("past") ||
+      normalizedQuery.includes("12.2.6.6") ||
+      normalizedQuery.includes("6 ชั่วโมง") ||
+      normalizedQuery.includes("3 ชั่วโมง") ||
+      normalizedQuery.includes("2 ชั่วโมง") ||
+      normalizedQuery.includes("ทุก 2 ชั่วโมง") ||
+      normalizedQuery.includes("w1w2 และ ww") ||
+      normalizedQuery.includes("w1w2+ww") ||
+      normalizedQuery.includes("w1w2 + ww") ||
       normalizedQuery.includes("เวลาหลัก") ||
       normalizedQuery.includes("เวลารอง") ||
       normalizedQuery.includes("ครอบคลุม") ||
@@ -375,11 +475,24 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   }
 
   if (
-    record.id === "custom_w1w2_priority_examples_79192_79122_001" &&
+    record.id === "custom_w1w2_priority_examples_79599_79162_79222_001" &&
     (normalizedQuery.includes("w1") ||
       normalizedQuery.includes("w2") ||
+      normalizedQuery.includes("79599") ||
+      normalizedQuery.includes("ww17") ||
+      normalizedQuery.includes("ww95") ||
+      normalizedQuery.includes("95") ||
+      normalizedQuery.includes("91-99") ||
+      normalizedQuery.includes("ไม่มีฝน") ||
+      normalizedQuery.includes("ไม่มีหยาด") ||
+      normalizedQuery.includes("หยาดน้ำฟ้า") ||
+      normalizedQuery.includes("หยาดน้ํา") ||
+      normalizedQuery.includes("ได้ยินเสียง") ||
+      normalizedQuery.includes("เสียงฟ้าร้อง") ||
+      normalizedQuery.includes("ฟ้าร้อง") ||
       normalizedQuery.includes("79192") ||
       normalizedQuery.includes("79122") ||
+      normalizedQuery.includes("79162") ||
       normalizedQuery.includes("79222") ||
       normalizedQuery.includes("9122") ||
       normalizedQuery.includes("9222") ||
