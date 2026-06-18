@@ -9,7 +9,12 @@ export type ChatLogEntry = {
   assistantMessage?: ChatMessage;
   sources?: RagSource[];
   error?: string;
-  mode: "openai" | "extractive" | "quota-fallback" | "clarification";
+  mode:
+    | "openai"
+    | "extractive"
+    | "quota-fallback"
+    | "clarification"
+    | "khonkaen-rain-csv";
 };
 
 

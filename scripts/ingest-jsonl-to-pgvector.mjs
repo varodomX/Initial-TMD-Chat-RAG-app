@@ -11,8 +11,14 @@ const DEFAULT_PATHS = [
   "data/khonkaen_station_vector_db/chunks.jsonl",
   "data/synop_vector_db/chunks.jsonl",
   "data/meteo_knowledge_vector_db/data/chunks.jsonl",
+  "data/khonkaen_rain_vector_db/data/chunks.jsonl",
   "data/cloud_atlas_th_vector_db/cloud_chunks_th.jsonl",
 ];
+
+const NAMESPACED_ID_SOURCES = new Set([
+  "meteo_knowledge_vector_db",
+  "khonkaen_rain_vector_db",
+]);
 
 function sourceNamespace(filePath) {
   const normalized = filePath.split(path.sep).join("/");
@@ -67,8 +73,9 @@ function readJsonl(filePath) {
           ? row.id
           : `${path.basename(path.dirname(filePath))}-${index + 1}`;
       const namespace = sourceNamespace(filePath);
-      const id =
-        namespace === "meteo_knowledge_vector_db" ? `${namespace}:${rawId}` : rawId;
+      const id = NAMESPACED_ID_SOURCES.has(namespace)
+        ? `${namespace}:${rawId}`
+        : rawId;
       const metadata = {
         ...row,
         raw_id: row.id,

@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { NextResponse } from "next/server";
 import type {
   ResponseInput,
@@ -11,6 +13,33 @@ import { readUploadAsDataUrl } from "@/lib/uploads";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
+
+type RainDailyRecord = {
+  year: number;
+  month: number;
+  day: number;
+  district: string;
+  stationCode: string;
+  rainMm: number;
+};
+
+let rainRecordsCache: RainDailyRecord[] | undefined;
+
+const THAI_MONTHS = [
+  "",
+  "มกราคม",
+  "กุมภาพันธ์",
+  "มีนาคม",
+  "เมษายน",
+  "พฤษภาคม",
+  "มิถุนายน",
+  "กรกฎาคม",
+  "สิงหาคม",
+  "กันยายน",
+  "ตุลาคม",
+  "พฤศจิกายน",
+  "ธันวาคม",
+];
 
 function latestUserMessage(messages: ChatMessage[]) {
   return [...messages].reverse().find((message) => message.role === "user");
@@ -157,6 +186,152 @@ function createExtractiveAnswer(sources: RagSource[], reason?: string) {
     .join("\n\n");
 }
 
+function readKhonKaenRainRecords() {
+  if (rainRecordsCache) return rainRecordsCache;
+
+  const csvPath = path.join(
+    process.cwd(),
+    "data",
+    "khonkaen_rain_vector_db",
+    "data",
+    "cleaned_daily_rain_records.csv",
+  );
+
+  if (!fs.existsSync(csvPath)) {
+    rainRecordsCache = [];
+    return rainRecordsCache;
+  }
+
+  const [headerLine = "", ...lines] = fs
+    .readFileSync(csvPath, "utf8")
+    .trim()
+    .split(/\r?\n/);
+  const headers = headerLine.replace(/^\uFEFF/, "").split(",");
+  const indexByHeader = new Map(headers.map((header, index) => [header, index]));
+
+  function value(columns: string[], header: string) {
+    const index = indexByHeader.get(header);
+    return typeof index === "number" ? columns[index] ?? "" : "";
+  }
+
+  rainRecordsCache = lines
+    .map((line) => {
+      const columns = line.split(",");
+      return {
+        year: Number(value(columns, "year")),
+        month: Number(value(columns, "month")),
+        day: Number(value(columns, "day")),
+        district: value(columns, "district"),
+        stationCode: value(columns, "station_code"),
+        rainMm: Number(value(columns, "rain_mm")),
+      };
+    })
+    .filter(
+      (record) =>
+        Number.isFinite(record.year) &&
+        Number.isFinite(record.month) &&
+        Number.isFinite(record.day) &&
+        Number.isFinite(record.rainMm) &&
+        record.district,
+    );
+
+  return rainRecordsCache;
+}
+
+function normalizeThaiText(text: string) {
+  return text.toLowerCase().replace(/\s+/g, "");
+}
+
+function extractRainDistrict(message: string, records: RainDailyRecord[]) {
+  const normalized = normalizeThaiText(message);
+  const districts = Array.from(new Set(records.map((record) => record.district)));
+
+  return districts.find((district) => {
+    const full = normalizeThaiText(district);
+    const short = full.replace(/^อำเภอ/, "");
+    return normalized.includes(full) || normalized.includes(short);
+  });
+}
+
+function extractRainYear(message: string) {
+  const normalized = normalizeThaiText(message);
+
+  if (normalized.includes("ปีที่แล้ว")) {
+    return new Date().getFullYear() - 1;
+  }
+
+  const christianYear = message.match(/(?:ค\.ศ\.|ปี)?\s*(20\d{2})/);
+  if (christianYear) return Number(christianYear[1]);
+
+  const buddhistYear = message.match(/(?:พ\.ศ\.|ปี)?\s*(25\d{2})/);
+  if (buddhistYear) return Number(buddhistYear[1]) - 543;
+
+  return undefined;
+}
+
+function createKhonKaenRainAnswer(message: string): ChatMessage | undefined {
+  const normalized = normalizeThaiText(message);
+  const asksRain = normalized.includes("ฝน") || normalized.includes("rain");
+  const asksMaximum =
+    normalized.includes("ตกหนักที่สุด") ||
+    normalized.includes("หนักที่สุด") ||
+    normalized.includes("มากที่สุด") ||
+    normalized.includes("สูงสุด");
+  const asksDate =
+    normalized.includes("วันที่") ||
+    normalized.includes("วันไหน") ||
+    normalized.includes("เมื่อไหร่") ||
+    normalized.includes("เมื่อไร");
+
+  if (!asksRain || !asksMaximum || !asksDate) {
+    return undefined;
+  }
+
+  const records = readKhonKaenRainRecords();
+  const district = extractRainDistrict(message, records);
+  const year = extractRainYear(message);
+
+  if (!district || !year) {
+    return undefined;
+  }
+
+  const candidates = records.filter(
+    (record) => record.district === district && record.year === year,
+  );
+
+  if (!candidates.length) {
+    return {
+      role: "assistant",
+      content: `ยังไม่พบข้อมูลฝนรายวันของ ${district} ปี ${year} ในฐานข้อมูลครับ`,
+    };
+  }
+
+  const maxRain = Math.max(...candidates.map((record) => record.rainMm));
+  const maxRecords = candidates.filter((record) => record.rainMm === maxRain);
+
+  if (maxRain <= 0) {
+    return {
+      role: "assistant",
+      content: `${district} ปี ${year} ไม่มีวันที่มีฝนมากกว่า 0.0 มม. ในฐานข้อมูลครับ`,
+    };
+  }
+
+  const dates = maxRecords
+    .map(
+      (record) =>
+        `${record.day} ${THAI_MONTHS[record.month]} ${record.year} ` +
+        `(สถานี ${record.stationCode})`,
+    )
+    .join(", ");
+
+  return {
+    role: "assistant",
+    content:
+      `ฝนของ${district}ที่ตกหนักที่สุดในปี ${year} คือวันที่ ${dates}\n` +
+      `ปริมาณฝนสูงสุดรายวัน ${maxRain.toFixed(1)} มม.`,
+  };
+}
+
 export async function POST(request: Request) {
   let conversationId = "unknown";
   let latest: ChatMessage | undefined;
@@ -197,6 +372,26 @@ export async function POST(request: Request) {
         message: assistantMessage,
         sources: [],
       });
+    }
+
+    if (latest.content && !latest.imageUrl) {
+      const rainAnswer = createKhonKaenRainAnswer(latest.content);
+
+      if (rainAnswer) {
+        await appendChatLog({
+          conversationId,
+          createdAt: new Date().toISOString(),
+          userMessage: latest,
+          assistantMessage: rainAnswer,
+          sources: [],
+          mode: "khonkaen-rain-csv",
+        });
+
+        return NextResponse.json({
+          message: rainAnswer,
+          sources: [],
+        });
+      }
     }
 
     const retriever = createRetriever();
