@@ -203,6 +203,24 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
   }
 
   if (
+    normalizedQuery.includes("ทิศ") ||
+    normalizedQuery.includes("ทิศ น") ||
+    normalizedQuery.includes("ทิศ อ") ||
+    normalizedQuery.includes("ทิศ ว") ||
+    normalizedQuery.includes("ทิศ ซ") ||
+    normalizedQuery.includes("ทิศเหนือ") ||
+    normalizedQuery.includes("ทิศตะวันออก") ||
+    normalizedQuery.includes("ทิศตะวันตก") ||
+    normalizedQuery.includes("ทิศใต้") ||
+    normalizedQuery.includes("north") ||
+    normalizedQuery.includes("east") ||
+    normalizedQuery.includes("west") ||
+    normalizedQuery.includes("south")
+  ) {
+    score += 10;
+  }
+
+  if (
     normalizedQuery.includes("เวลาหลัก") ||
     normalizedQuery.includes("เวลารอง") ||
     normalizedQuery.includes("12.2.6.6") ||
@@ -348,8 +366,8 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     score += 28;
   }
 
-  if (
-    record.id === "custom_w1w2_rain60_69_thunder9_window_priority_001" &&
+	  if (
+	    record.id === "custom_w1w2_rain60_69_thunder9_window_priority_001" &&
     (normalizedQuery.includes("w1") ||
       normalizedQuery.includes("w2") ||
       normalizedQuery.includes("past") ||
@@ -470,12 +488,207 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("0300") ||
       normalizedQuery.includes("06:00") ||
       normalizedQuery.includes("06.00"))
-  ) {
-    score += 34;
-  }
+	  ) {
+	    score += 34;
+	  }
 
-  if (
-    record.id === "custom_w1w2_priority_examples_79599_79162_79222_001" &&
+	  if (
+	    record.id === "custom_ordinary_rain_minute50_cutoff_ww21_vs_61_001" &&
+	    (normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("w1") ||
+	      normalizedQuery.includes("w2") ||
+	      normalizedQuery.includes("รหัส")) &&
+	    (normalizedQuery.includes("21") ||
+	      normalizedQuery.includes("61") ||
+	      normalizedQuery.includes("63") ||
+	      normalizedQuery.includes("65") ||
+	      normalizedQuery.includes("76162") ||
+	      normalizedQuery.includes("72162") ||
+	      normalizedQuery.includes("นาทีที่ 50") ||
+	      normalizedQuery.includes("นาที 50") ||
+	      normalizedQuery.includes("นาทีที่50") ||
+	      normalizedQuery.includes("นาที 51") ||
+	      normalizedQuery.includes("05.50") ||
+	      normalizedQuery.includes("05:50") ||
+	      normalizedQuery.includes("05.51") ||
+	      normalizedQuery.includes("05:51") ||
+	      normalizedQuery.includes("05.55") ||
+	      normalizedQuery.includes("05:55") ||
+	      normalizedQuery.includes("หยุดก่อน") ||
+	      normalizedQuery.includes("ฝนธรรมดา"))
+	  ) {
+	    score += 48;
+	  }
+
+	  if (
+	    record.id === "custom_thundery_rain_minute35_cutoff_ww29_vs_95_99_001" &&
+	    (normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("w1") ||
+	      normalizedQuery.includes("w2") ||
+	      normalizedQuery.includes("รหัส")) &&
+	    (normalizedQuery.includes("29") ||
+	      normalizedQuery.includes("95") ||
+	      normalizedQuery.includes("96") ||
+	      normalizedQuery.includes("97") ||
+	      normalizedQuery.includes("99") ||
+	      normalizedQuery.includes("95-99") ||
+	      normalizedQuery.includes("72962") ||
+	      normalizedQuery.includes("79596") ||
+	      normalizedQuery.includes("นาทีที่ 35") ||
+	      normalizedQuery.includes("นาที 35") ||
+	      normalizedQuery.includes("นาทีที่35") ||
+	      normalizedQuery.includes("นาที 36") ||
+	      normalizedQuery.includes("08.35") ||
+	      normalizedQuery.includes("08:35") ||
+	      normalizedQuery.includes("08.36") ||
+	      normalizedQuery.includes("08:36") ||
+	      normalizedQuery.includes("08.40") ||
+	      normalizedQuery.includes("08:40") ||
+	      normalizedQuery.includes("08.55") ||
+	      normalizedQuery.includes("08:55") ||
+	      normalizedQuery.includes("ฝนฟ้าคะนอง") ||
+	      normalizedQuery.includes("ฟ้าคะนอง"))
+	  ) {
+	    score += 52;
+	  }
+
+	  if (
+	    record.id === "custom_latest_final_hour_weather_overrides_ww29_71796_001" &&
+	    (normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("w1") ||
+	      normalizedQuery.includes("w2") ||
+	      normalizedQuery.includes("รหัส")) &&
+	    (normalizedQuery.includes("ล่าสุด") ||
+	      normalizedQuery.includes("ลำดับ") ||
+	      normalizedQuery.includes("เรียง") ||
+	      normalizedQuery.includes("17") ||
+	      normalizedQuery.includes("29") ||
+	      normalizedQuery.includes("95") ||
+	      normalizedQuery.includes("71796") ||
+	      normalizedQuery.includes("2996") ||
+	      normalizedQuery.includes("72996") ||
+	      normalizedQuery.includes("11.35") ||
+	      normalizedQuery.includes("11:35") ||
+	      normalizedQuery.includes("11.50") ||
+	      normalizedQuery.includes("11:50") ||
+	      normalizedQuery.includes("11.10") ||
+	      normalizedQuery.includes("11:10") ||
+	      normalizedQuery.includes("12.00") ||
+	      normalizedQuery.includes("12:00") ||
+	      normalizedQuery.includes("ฝนฟ้าคะนอง") ||
+	      normalizedQuery.includes("ฟ้าคะนอง"))
+	  ) {
+	    score += 56;
+	  }
+
+	  if (
+	    record.id ===
+	      "custom_w1w2_fallback_010203_haze_loses_to_significant_weather_001" &&
+	    (normalizedQuery.includes("w1") ||
+	      normalizedQuery.includes("w2") ||
+	      normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("รหัส")) &&
+	    (normalizedQuery.includes("01") ||
+	      normalizedQuery.includes("02") ||
+	      normalizedQuery.includes("03") ||
+	      normalizedQuery.includes("10") ||
+	      normalizedQuery.includes("05") ||
+	      normalizedQuery.includes("ฟ้าหลัว") ||
+	      normalizedQuery.includes("วิโรฒ") ||
+	      normalizedQuery.includes("ศิริใส") ||
+	      normalizedQuery.includes("22:00") ||
+	      normalizedQuery.includes("22.00") ||
+	      normalizedQuery.includes("19:00-22:00") ||
+	      normalizedQuery.includes("19.00-22.00") ||
+	      normalizedQuery.includes("95") ||
+	      normalizedQuery.includes("63") ||
+	      normalizedQuery.includes("ฝนฟ้าคะนอง") ||
+	      normalizedQuery.includes("ฟ้าคะนอง") ||
+	      normalizedQuery.includes("ฝนธรรมดา") ||
+	      normalizedQuery.includes("สำคัญกว่า"))
+	  ) {
+	    score += 54;
+	  }
+
+	  if (
+	    record.id === "custom_ww05_dry_haze_ww10_humid_mist_001" &&
+	    (normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("รหัส") ||
+	      normalizedQuery.includes("05") ||
+	      normalizedQuery.includes("10")) &&
+	    (normalizedQuery.includes("ฟ้าหลัว") ||
+	      normalizedQuery.includes("ฟ้าหลัวแห้ง") ||
+	      normalizedQuery.includes("ฟ้าหลัวชื้น") ||
+	      normalizedQuery.includes("haze") ||
+	      normalizedQuery.includes("mist") ||
+	      normalizedQuery.includes("หมอกน้ำค้าง") ||
+	      normalizedQuery.includes("หมอกน้ําค้าง") ||
+	      normalizedQuery.includes("ความชื้น") ||
+	      normalizedQuery.includes("65%"))
+	  ) {
+	    score += 58;
+	  }
+
+	  if (
+	    record.id === "custom_latest_ww10_after_rain_w1w2_keeps_rain_71062_001" &&
+	    (normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("w1") ||
+	      normalizedQuery.includes("w2") ||
+	      normalizedQuery.includes("รหัส")) &&
+	    (normalizedQuery.includes("10") ||
+	      normalizedQuery.includes("71062") ||
+	      normalizedQuery.includes("ฟ้าหลัว") ||
+	      normalizedQuery.includes("ฟ้าหลัวชื้น") ||
+	      normalizedQuery.includes("ชื้น") ||
+	      normalizedQuery.includes("ล่าสุด") ||
+	      normalizedQuery.includes("05:00") ||
+	      normalizedQuery.includes("05.00") ||
+	      normalizedQuery.includes("06:00") ||
+	      normalizedQuery.includes("06.00") ||
+	      normalizedQuery.includes("05:00-06:00") ||
+	      normalizedQuery.includes("05.00-06.00") ||
+	      normalizedQuery.includes("ฝนธรรมดา") ||
+	      normalizedQuery.includes("ฝนหนัก"))
+	  ) {
+	    score += 56;
+	  }
+
+	  if (
+	    record.id === "custom_w1w2_group9_gap_not_99_71792_001" &&
+	    (normalizedQuery.includes("w1") ||
+	      normalizedQuery.includes("w2") ||
+	      normalizedQuery.includes("w1w2") ||
+	      normalizedQuery.includes("ww") ||
+	      normalizedQuery.includes("รหัส")) &&
+	    (normalizedQuery.includes("71792") ||
+	      normalizedQuery.includes("71799") ||
+	      normalizedQuery.includes("w1w2=99") ||
+	      normalizedQuery.includes("w1w2 = 99") ||
+	      normalizedQuery.includes("99") ||
+	      normalizedQuery.includes("92") ||
+	      normalizedQuery.includes("ช่องว่าง") ||
+	      normalizedQuery.includes("ไม่คลุม") ||
+	      normalizedQuery.includes("คลุมทั้ง") ||
+	      normalizedQuery.includes("คลุมเต็ม") ||
+	      normalizedQuery.includes("6 ชม") ||
+	      normalizedQuery.includes("6 ชั่วโมง") ||
+	      normalizedQuery.includes("3 ชม") ||
+	      normalizedQuery.includes("3 ชั่วโมง") ||
+	      normalizedQuery.includes("11.10") ||
+	      normalizedQuery.includes("11:10") ||
+	      normalizedQuery.includes("11.45") ||
+	      normalizedQuery.includes("11:45") ||
+	      normalizedQuery.includes("12.00") ||
+	      normalizedQuery.includes("12:00") ||
+	      normalizedQuery.includes("ฝนฟ้าคะนอง") ||
+	      normalizedQuery.includes("ฟ้าคะนอง") ||
+	      normalizedQuery.includes("กลุ่ม 9"))
+	  ) {
+	    score += 62;
+	  }
+
+	  if (
+	    record.id === "custom_w1w2_priority_examples_79599_79162_79222_001" &&
     (normalizedQuery.includes("w1") ||
       normalizedQuery.includes("w2") ||
       normalizedQuery.includes("79599") ||
@@ -508,11 +721,35 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
       normalizedQuery.includes("ซ้ำ") ||
       normalizedQuery.includes("ฟ้าคะนอง") ||
       normalizedQuery.includes("ฝนธรรมดา") ||
-      normalizedQuery.includes("เบา") ||
-      normalizedQuery.includes("ปานกลาง") ||
-      normalizedQuery.includes("หนัก"))
-  ) {
+	      normalizedQuery.includes("เบา") ||
+	      normalizedQuery.includes("ปานกลาง") ||
+	      normalizedQuery.includes("หนัก") ||
+	      normalizedQuery.includes("ไม่ระบุ") ||
+	      normalizedQuery.includes("ไม่บอก") ||
+	      normalizedQuery.includes("ไม่ได้บอก") ||
+	      normalizedQuery.includes("ความแรง") ||
+	      normalizedQuery.includes("ลูกเห็บ"))
+	  ) {
     score += 46;
+  }
+
+  if (
+    record.id === "custom_thai_direction_abbreviations_001" &&
+    (normalizedQuery.includes("ทิศ") ||
+      normalizedQuery.includes("ทิศ น") ||
+      normalizedQuery.includes("ทิศ อ") ||
+      normalizedQuery.includes("ทิศ ว") ||
+      normalizedQuery.includes("ทิศ ซ") ||
+      normalizedQuery.includes("ทิศเหนือ") ||
+      normalizedQuery.includes("ทิศตะวันออก") ||
+      normalizedQuery.includes("ทิศตะวันตก") ||
+      normalizedQuery.includes("ทิศใต้") ||
+      normalizedQuery.includes("north") ||
+      normalizedQuery.includes("east") ||
+      normalizedQuery.includes("west") ||
+      normalizedQuery.includes("south"))
+  ) {
+    score += 40;
   }
 
   if (
