@@ -9,7 +9,6 @@ import {
   ImagePlus,
   Loader2,
   Send,
-  Sparkles,
   X,
 } from "lucide-react";
 
@@ -26,6 +25,95 @@ type Source = {
   metadata: Record<string, unknown>;
   score: number;
 };
+
+function RadarMascot({ compact = false }: { compact?: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={compact ? "size-10" : "size-24 sm:size-28"}
+      fill="none"
+      viewBox="0 0 120 120"
+    >
+      <defs>
+        <linearGradient id="mascotCloud" x1="26" x2="92" y1="34" y2="91">
+          <stop stopColor="#F8FAFC" />
+          <stop offset="0.52" stopColor="#A7F3D0" />
+          <stop offset="1" stopColor="#38BDF8" />
+        </linearGradient>
+        <linearGradient id="mascotGlow" x1="24" x2="96" y1="20" y2="106">
+          <stop stopColor="#22D3EE" />
+          <stop offset="1" stopColor="#6366F1" />
+        </linearGradient>
+        <filter
+          id="softGlow"
+          colorInterpolationFilters="sRGB"
+          filterUnits="userSpaceOnUse"
+          height="118"
+          width="118"
+          x="1"
+          y="1"
+        >
+          <feDropShadow dx="0" dy="10" floodColor="#22D3EE" floodOpacity="0.25" stdDeviation="8" />
+        </filter>
+      </defs>
+      <g filter="url(#softGlow)">
+        <path
+          d="M32 70c-8.8 0-16-7.2-16-16s7.2-16 16-16c2.5 0 4.9.6 7 1.6C43.2 29.4 53.3 22 65 22c14.6 0 26.6 11.1 28 25.3 6.6 2.1 11 8.2 11 15.3C104 71.7 96.7 79 87.6 79H32Z"
+          fill="url(#mascotCloud)"
+          stroke="#BAE6FD"
+          strokeWidth="3"
+        />
+        <path
+          d="M43 79h45v11c0 8.8-10.1 16-22.5 16S43 98.8 43 90V79Z"
+          fill="#0F172A"
+          stroke="#38BDF8"
+          strokeWidth="3"
+        />
+        <path
+          d="M54 87h23"
+          stroke="#67E8F9"
+          strokeLinecap="round"
+          strokeWidth="4"
+        />
+        <circle cx="50" cy="56" fill="#0F172A" r="8" />
+        <circle cx="79" cy="56" fill="#0F172A" r="8" />
+        <circle cx="50" cy="56" fill="#67E8F9" r="3" />
+        <circle cx="79" cy="56" fill="#67E8F9" r="3" />
+        <path
+          d="M54 69c5.2 4.8 15.2 4.8 20.4 0"
+          stroke="#0F172A"
+          strokeLinecap="round"
+          strokeWidth="4"
+        />
+        <path
+          d="M60 22V12m-13 8c-5.7-5.1-13.5-7.3-21-5.7m47 5.7c5.7-5.1 13.5-7.3 21-5.7"
+          stroke="url(#mascotGlow)"
+          strokeLinecap="round"
+          strokeWidth="4"
+        />
+        <path
+          d="M34 83c-5 3-8 7.2-8 12m68-12c5 3 8 7.2 8 12"
+          stroke="#38BDF8"
+          strokeLinecap="round"
+          strokeWidth="4"
+        />
+        <path
+          d="M26 31c-8.6-2.6-15.6-8.6-19.4-16.6M94 31c8.6-2.6 15.6-8.6 19.4-16.6"
+          stroke="#22D3EE"
+          strokeLinecap="round"
+          strokeOpacity="0.65"
+          strokeWidth="3"
+        />
+        <path
+          d="M92 36c3.5-1.1 6.5-3.4 8.5-6.5M28 36c-3.5-1.1-6.5-3.4-8.5-6.5"
+          stroke="#FBBF24"
+          strokeLinecap="round"
+          strokeWidth="3"
+        />
+      </g>
+    </svg>
+  );
+}
 
 async function parseJsonResponse(response: Response) {
   const text = await response.text();
@@ -54,7 +142,8 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "สวัสดีครับ ผมคือ TMD Chat",
+      content:
+        "สวัสดีครับ ผมคือน้องเรดาร์ จาก TMD KhonKaen Chat ถามเรื่องอุตุนิยมวิทยา รหัส SYNOP หรือข้อมูลสถานีขอนแก่นได้เลยครับ",
     },
   ]);
   const [sources, setSources] = useState<Source[]>([]);
@@ -177,7 +266,8 @@ export default function Home() {
     setMessages([
       {
         role: "assistant",
-        content: "สวัสดีครับ ผมคือ TMD Chat",
+        content:
+          "สวัสดีครับ ผมคือน้องเรดาร์ จาก TMD KhonKaen Chat ถามเรื่องอุตุนิยมวิทยา รหัส SYNOP หรือข้อมูลสถานีขอนแก่นได้เลยครับ",
       },
     ]);
     setSources([]);
@@ -194,15 +284,14 @@ export default function Home() {
       <div className="relative grid min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
         <aside className="flex min-h-0 flex-col gap-5 border-b border-white/10 bg-zinc-950/80 p-4 backdrop-blur-xl lg:h-screen lg:border-b-0 lg:border-r lg:p-5">
           <div className="flex items-center gap-3">
-            <span className="relative grid size-11 place-items-center rounded-md border border-white/10 bg-zinc-900 text-cyan-200 shadow-[0_0_35px_rgba(34,211,238,0.2)]">
-              <span className="absolute inset-2 rounded-full border border-fuchsia-400/70" />
-              <Sparkles size={18} />
+            <span className="grid size-12 place-items-center rounded-md border border-cyan-300/25 bg-cyan-300/10 shadow-[0_0_35px_rgba(34,211,238,0.2)]">
+              <RadarMascot compact />
             </span>
             <div>
               <h1 className="text-lg font-semibold leading-tight text-white">
-                TMDRAG
+                TMD KhonKaen Chat
               </h1>
-              <p className="text-xs text-zinc-500">Meteorological AI Workspace</p>
+              <p className="text-xs text-zinc-500">น้องเรดาร์ AI Weather Assistant</p>
             </div>
           </div>
 
@@ -250,43 +339,17 @@ export default function Home() {
 
           <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">
             <h2 className="px-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
-              Sources
+              Knowledge
             </h2>
-            {sources.length ? (
-              sources.map((source) => (
-                <article
-                  className="grid gap-2 rounded-md border border-white/10 bg-zinc-900/70 p-3 shadow-sm"
-                  key={source.id}
-                >
-                  <strong className="text-sm font-medium text-zinc-100">
-                    {typeof source.metadata.title === "string"
-                      ? source.metadata.title
-                      : source.id}
-                  </strong>
-                  <p className="source-content text-xs leading-5 text-zinc-400">
-                    {source.content}
-                  </p>
-                  {typeof source.metadata.imageUrl === "string" && (
-                    <img
-                      alt={
-                        typeof source.metadata.title === "string"
-                          ? source.metadata.title
-                          : source.id
-                      }
-                      className="max-h-28 w-full rounded-md object-cover"
-                      src={source.metadata.imageUrl}
-                    />
-                  )}
-                  <small className="text-[11px] text-cyan-300/70">
-                    score {source.score.toFixed(2)}
-                  </small>
-                </article>
-              ))
-            ) : (
-              <p className="rounded-md border border-dashed border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-zinc-500">
-                Sources from the latest answer will appear here.
-              </p>
-            )}
+            <div className="grid gap-3 rounded-md border border-white/10 bg-white/[0.035] p-4">
+              <RadarMascot />
+              <div className="grid gap-1">
+                <p className="text-sm font-medium text-zinc-100">น้องเรดาร์</p>
+                <p className="text-xs leading-5 text-zinc-500">
+                  ผู้ช่วยแชตสำหรับงานอุตุนิยมวิทยาขอนแก่น
+                </p>
+              </div>
+            </div>
           </section>
         </aside>
 
@@ -306,18 +369,27 @@ export default function Home() {
           <div className="mx-auto flex w-full max-w-6xl min-h-0 flex-col overflow-hidden rounded-md border border-white/10 bg-zinc-950/60 shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_0_70px_rgba(236,72,153,0.16)]">
             <div className="flex min-h-12 items-center justify-between border-b border-white/10 px-4">
               <div className="flex items-center gap-2 text-sm font-medium text-zinc-200">
-                <span className="size-3 rounded-full border border-cyan-300 bg-fuchsia-400/80" />
-                TMD Chat
+                <span className="size-3 rounded-full border border-cyan-300 bg-cyan-300 shadow-[0_0_16px_rgba(34,211,238,0.75)]" />
+                TMD KhonKaen Chat
               </div>
               <span className="rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-zinc-500">
-                Invite
+                น้องเรดาร์ online
               </span>
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto p-3 sm:p-5">
               <div className="grid gap-1 border-b border-white/10 pb-4">
-                <p className="text-2xl font-semibold text-white">TMD Chat</p>
-                <p className="text-sm text-zinc-500">How can I help you?</p>
+                <div className="flex flex-wrap items-center gap-4">
+                  <RadarMascot />
+                  <div>
+                    <p className="text-2xl font-semibold text-white">
+                      TMD KhonKaen Chat
+                    </p>
+                    <p className="text-sm text-zinc-500">
+                      ถามฟ้า ถามฝน ถามน้องเรดาร์
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {messages.map((message, index) => (
@@ -328,7 +400,7 @@ export default function Home() {
                   key={index}
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
-                    {message.role === "assistant" ? "AI" : "You"}
+                    {message.role === "assistant" ? "น้องเรดาร์" : "You"}
                   </span>
                   <div
                     className={`grid gap-3 rounded-md border p-4 leading-7 shadow-sm ${

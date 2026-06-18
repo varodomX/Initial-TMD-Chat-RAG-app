@@ -10,8 +10,15 @@ const DEFAULT_PATHS = [
   "data/custom_knowledge_vector_db/chunks.jsonl",
   "data/khonkaen_station_vector_db/chunks.jsonl",
   "data/synop_vector_db/chunks.jsonl",
+  "data/meteo_knowledge_vector_db/data/chunks.jsonl",
   "data/cloud_atlas_th_vector_db/cloud_chunks_th.jsonl",
 ];
+
+function sourceNamespace(filePath) {
+  const normalized = filePath.split(path.sep).join("/");
+  const match = normalized.match(/data\/([^/]+)\//);
+  return match?.[1] ?? path.basename(path.dirname(filePath));
+}
 
 function loadEnvFile(filePath, { override = false } = {}) {
   if (!fs.existsSync(filePath)) return;
@@ -55,15 +62,20 @@ function readJsonl(filePath) {
       const content = row.content ?? row.text;
       if (!content || typeof content !== "string") return null;
 
-      const id =
+      const rawId =
         typeof row.id === "string"
           ? row.id
           : `${path.basename(path.dirname(filePath))}-${index + 1}`;
+      const namespace = sourceNamespace(filePath);
+      const id =
+        namespace === "meteo_knowledge_vector_db" ? `${namespace}:${rawId}` : rawId;
       const metadata = {
         ...row,
+        raw_id: row.id,
         content: undefined,
         text: undefined,
         vector_source_file: filePath,
+        vector_source_namespace: namespace,
       };
 
       return { id, content, metadata };

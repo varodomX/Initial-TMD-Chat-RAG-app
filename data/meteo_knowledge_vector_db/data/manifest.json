@@ -1,0 +1,46 @@
+{
+  "created_at": "2026-06-18T06:47:15.529676Z",
+  "chunk_count": 423,
+  "documents": [
+    {
+      "file_name": "1 นำเสนอ การวิเคราะห์การเคลื่อนตัวของกลุ่.pdf",
+      "pages": 33,
+      "category": "radar"
+    },
+    {
+      "file_name": "2 นำเสนอการเคลื่อนตัวกลุ่มฝน.pdf",
+      "pages": 56,
+      "category": "radar"
+    },
+    {
+      "file_name": "2568_ศล_ตต_เอกสารแนบ 1_สรุปองค์ความรู้ KM เล่ม 1- ก.pdf",
+      "pages": 34,
+      "category": "radar"
+    },
+    {
+      "file_name": "KM_Pressure_data.pdf",
+      "pages": 127,
+      "category": "pressure_metar"
+    },
+    {
+      "file_name": "ความรู้เบื้องต้นเกี่ยวกับภัยพิภัยทางธรร.pdf",
+      "pages": 52,
+      "category": "natural_disaster"
+    },
+    {
+      "file_name": "ภัยธรรมชาติประเทศไทย (สมิทธ).pdf",
+      "pages": 22,
+      "category": "natural_disaster"
+    },
+    {
+      "file_name": "ระดับ1_รายวิชา_ความรู้เบื้องต้นเกี่ยวกับภ.pdf",
+      "pages": 59,
+      "category": "earthquake"
+    },
+    {
+      "file_name": "รายวิชา_ความสำคัญของเครือข่ายอุตุนิยมวิท.pdf",
+      "pages": 22,
+      "category": "volunteer_network"
+    }
+  ]
+}
