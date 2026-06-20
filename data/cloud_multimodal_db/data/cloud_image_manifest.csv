@@ -1,11 +1,15 @@
 id,code,file_path,source_url,license,note
-ci_001,Ci,images/Ci/ci_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cirrus ที่นี่"
-cc_001,Cc,images/Cc/cc_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cirrocumulus ที่นี่"
-cs_001,Cs,images/Cs/cs_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cirrostratus ที่นี่"
-ac_001,Ac,images/Ac/ac_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Altocumulus ที่นี่"
-as_001,As,images/As/as_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Altostratus ที่นี่"
-ns_001,Ns,images/Ns/ns_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Nimbostratus ที่นี่"
-sc_001,Sc,images/Sc/sc_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Stratocumulus ที่นี่"
-st_001,St,images/St/st_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Stratus ที่นี่"
-cu_001,Cu,images/Cu/cu_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cumulus ที่นี่"
-cb_001,Cb,images/Cb/cb_001.jpg,,,"ใส่ภาพตัวอย่างเมฆ Cumulonimbus ที่นี่"
+ci_001,Ci,images/Ci/ci_001.jpg,https://upload.wikimedia.org/wikipedia/commons/c/cb/A_cirrus_cloud.jpg,Wikimedia Commons,File:A cirrus cloud.jpg
+ci_002,Ci,images/Ci/ci_002.jpg,https://upload.wikimedia.org/wikipedia/commons/2/2b/Abendrot_an_Cirrus%2C_Strommast_und_Windrad_III.jpg,Wikimedia Commons,File:Abendrot an Cirrus Strommast und Windrad III.jpg
+ci_003,Ci,images/Ci/ci_003.jpg,https://upload.wikimedia.org/wikipedia/commons/2/2e/CirrusField-color.jpg,Wikimedia Commons,File:CirrusField-color.jpg
+ci_004,Ci,images/Ci/ci_004.jpg,https://upload.wikimedia.org/wikipedia/commons/3/36/Cirrus_sky_panorama.jpg,Wikimedia Commons,File:Cirrus sky panorama.jpg
+cc_001,Cc,images/Cc/cc_001.jpg,https://upload.wikimedia.org/wikipedia/commons/b/b3/Cirrocumulus_clouds_Thousand_Oaks_July_2010.jpg,Wikimedia Commons,File:Cirrocumulus clouds Thousand Oaks July 2010.jpg
+cs_001,Cs,images/Cs/cs_001.jpg,https://upload.wikimedia.org/wikipedia/commons/2/2e/CirrusField-color.jpg,Wikimedia Commons,File:CirrusField-color.jpg
+ns_001,Ns,images/Ns/ns_001.jpg,https://upload.wikimedia.org/wikipedia/commons/4/4f/Ns1.jpg,Wikimedia Commons,File:Ns1.jpg
+ns_002,Ns,images/Ns/ns_002.jpg,https://upload.wikimedia.org/wikipedia/commons/b/b6/Reflected_sunset.jpg,Wikimedia Commons,File:Reflected sunset.jpg
+cu_001,Cu,images/Cu/cu_001.jpg,https://upload.wikimedia.org/wikipedia/commons/2/2b/Cumulus_cloud_above_Lechtaler_Alps_at_tannheim%2C_Austria.jpg,Wikimedia Commons,File:Cumulus cloud above Lechtaler Alps at tannheim Austria.jpg
+cb_001,Cb,images/Cb/cb_001.jpg,https://upload.wikimedia.org/wikipedia/commons/8/82/Lightning_Pritzerbe_01_%28MK%29.jpg,Wikimedia Commons,File:Lightning Pritzerbe 01 MK.jpg
+ac_001,Ac,images/Ac/ac_001.jpg,,,"ยังไม่มีภาพ Altocumulus ใน cloud_dataset"
+as_001,As,images/As/as_001.jpg,,,"ยังไม่มีภาพ Altostratus ใน cloud_dataset"
+sc_001,Sc,images/Sc/sc_001.jpg,,,"ยังไม่มีภาพ Stratocumulus ใน cloud_dataset"
+st_001,St,images/St/st_001.jpg,,,"ยังไม่มีภาพ Stratus ใน cloud_dataset"
