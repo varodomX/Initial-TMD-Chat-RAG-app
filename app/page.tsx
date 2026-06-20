@@ -143,7 +143,7 @@ export default function Home() {
     {
       role: "assistant",
       content:
-        "สวัสดีครับ ผมคือน้องเรดาร์ จาก TMD KhonKaen Chat ถามเรื่องอุตุนิยมวิทยา รหัส SYNOP หรือข้อมูลสถานีขอนแก่นได้เลยครับ",
+        "สวัสดีครับ ผมคือน้องแก่นฟ้า จาก TMD KhonKaen Chat ถามเรื่องอุตุนิยมวิทยา รหัส SYNOP หรือข้อมูลสถานีขอนแก่นได้เลยครับ",
     },
   ]);
   const [sources, setSources] = useState<Source[]>([]);
@@ -267,7 +267,7 @@ export default function Home() {
       {
         role: "assistant",
         content:
-          "สวัสดีครับ ผมคือน้องเรดาร์ จาก TMD KhonKaen Chat ถามเรื่องอุตุนิยมวิทยา รหัส SYNOP หรือข้อมูลสถานีขอนแก่นได้เลยครับ",
+          "สวัสดีครับ ผมคือน้องแก่นฟ้า จาก TMD KhonKaen Chat ถามเรื่องอุตุนิยมวิทยา รหัส SYNOP หรือข้อมูลสถานีขอนแก่นได้เลยครับ",
       },
     ]);
     setSources([]);
@@ -291,7 +291,7 @@ export default function Home() {
               <h1 className="text-lg font-semibold leading-tight text-white">
                 TMD KhonKaen Chat
               </h1>
-              <p className="text-xs text-zinc-500">น้องเรดาร์ AI Weather Assistant</p>
+              <p className="text-xs text-zinc-500">น้องแก่นฟ้า AI Weather Assistant</p>
             </div>
           </div>
 
@@ -344,7 +344,7 @@ export default function Home() {
             <div className="grid gap-3 rounded-md border border-white/10 bg-white/[0.035] p-4">
               <RadarMascot />
               <div className="grid gap-1">
-                <p className="text-sm font-medium text-zinc-100">น้องเรดาร์</p>
+                <p className="text-sm font-medium text-zinc-100">น้องแก่นฟ้า</p>
                 <p className="text-xs leading-5 text-zinc-500">
                   ผู้ช่วยแชตสำหรับงานอุตุนิยมวิทยาขอนแก่น
                 </p>
@@ -373,7 +373,7 @@ export default function Home() {
                 TMD KhonKaen Chat
               </div>
               <span className="rounded border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-zinc-500">
-                น้องเรดาร์ online
+                น้องแก่นฟ้า online
               </span>
             </div>
 
@@ -386,7 +386,7 @@ export default function Home() {
                       TMD KhonKaen Chat
                     </p>
                     <p className="text-sm text-zinc-500">
-                      ถามฟ้า ถามฝน ถามน้องเรดาร์
+                      ถามฟ้า ถามฝน ถามน้องแก่นฟ้า
                     </p>
                   </div>
                 </div>
@@ -400,7 +400,7 @@ export default function Home() {
                   key={index}
                 >
                   <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-600">
-                    {message.role === "assistant" ? "น้องเรดาร์" : "You"}
+                    {message.role === "assistant" ? "น้องแก่นฟ้า" : "You"}
                   </span>
                   <div
                     className={`grid gap-3 rounded-md border p-4 leading-7 shadow-sm ${

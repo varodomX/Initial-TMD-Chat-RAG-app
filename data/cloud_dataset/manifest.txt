@@ -1,0 +1,43 @@
+Cloud Dataset
+Source: Wikimedia Commons via MediaWiki API
+Use: educational/reference dataset. Check each file license on Wikimedia Commons before publication/commercial use.
+
+Ci_Cirrus/Ci_Cirrus_01.jpg
+  Title: File:A cirrus cloud.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/c/cb/A_cirrus_cloud.jpg
+
+Ci_Cirrus/Ci_Cirrus_02.jpg
+  Title: File:Abendrot an Cirrus, Strommast und Windrad III.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/2/2b/Abendrot_an_Cirrus%2C_Strommast_und_Windrad_III.jpg
+
+Ci_Cirrus/Ci_Cirrus_03.jpg
+  Title: File:CirrusField-color.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/2/2e/CirrusField-color.jpg
+
+Ci_Cirrus/Ci_Cirrus_04.jpg
+  Title: File:Cirrus sky panorama.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/3/36/Cirrus_sky_panorama.jpg
+
+Cs_Cirrostratus/Cs_Cirrostratus_01.jpg
+  Title: File:CirrusField-color.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/2/2e/CirrusField-color.jpg
+
+Cc_Cirrocumulus/Cc_Cirrocumulus_01.jpg
+  Title: File:Cirrocumulus clouds Thousand Oaks July 2010.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/b/b3/Cirrocumulus_clouds_Thousand_Oaks_July_2010.jpg
+
+Ns_Nimbostratus/Ns_Nimbostratus_01.jpg
+  Title: File:Ns1.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/4/4f/Ns1.jpg
+
+Ns_Nimbostratus/Ns_Nimbostratus_02.jpg
+  Title: File:Reflected sunset.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/b/b6/Reflected_sunset.jpg
+
+Cu_Cumulus/Cu_Cumulus_01.jpg
+  Title: File:Cumulus cloud above Lechtaler Alps at tannheim, Austria.jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/2/2b/Cumulus_cloud_above_Lechtaler_Alps_at_tannheim%2C_Austria.jpg
+
+Cb_Cumulonimbus/Cb_Cumulonimbus_01.jpg
+  Title: File:Lightning Pritzerbe 01 (MK).jpg
+  URL: https://upload.wikimedia.org/wikipedia/commons/8/82/Lightning_Pritzerbe_01_%28MK%29.jpg
