@@ -169,26 +169,42 @@ function sourceImage(source: RagSource) {
   if (!imageUrl) return undefined;
 
   return {
-    imageUrl,
-    imageName:
+    url: imageUrl,
+    name:
       typeof source.metadata.title === "string"
         ? source.metadata.title
         : source.id,
   };
 }
 
+function sourceImages(sources: RagSource[]) {
+  const seen = new Set<string>();
+  const images = [];
+
+  for (const source of sources) {
+    const image = sourceImage(source);
+    if (!image || seen.has(image.url)) continue;
+
+    seen.add(image.url);
+    images.push(image);
+  }
+
+  return images;
+}
+
 function attachBestSourceImage(
   message: ChatMessage,
   sources: RagSource[],
 ): ChatMessage {
-  const image = sources.map(sourceImage).find(Boolean);
+  const images = sourceImages(sources);
 
-  if (!image) return message;
+  if (!images.length) return message;
 
   return {
     ...message,
-    imageName: image.imageName,
-    imageUrl: image.imageUrl,
+    imageName: images[0].name,
+    imageUrl: images[0].url,
+    images,
   };
 }
 
@@ -428,9 +444,10 @@ export async function POST(request: Request) {
 
     const retriever = createRetriever();
     const retrievalQuery = latest.content.trim() || latest.imageName || "รูปภาพ";
+    const requestedMatchCount = Number(process.env.RAG_MATCH_COUNT || 6);
     const sources = await retriever.search(
       retrievalQuery,
-      Number(process.env.RAG_MATCH_COUNT || 6),
+      Math.max(requestedMatchCount, 12),
     );
     const context = formatSourcesForPrompt(sources);
 

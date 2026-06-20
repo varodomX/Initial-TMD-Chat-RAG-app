@@ -17,6 +17,12 @@ type Message = {
   content: string;
   imageName?: string;
   imageUrl?: string;
+  images?: ChatImage[];
+};
+
+type ChatImage = {
+  name: string;
+  url: string;
 };
 
 type Source = {
@@ -409,13 +415,31 @@ export default function Home() {
                         : "border-white/10 bg-white/[0.045] text-zinc-100"
                     }`}
                   >
-                    {message.imageUrl && (
+                    {message.images?.length ? (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {message.images.map((image) => (
+                          <figure
+                            className="overflow-hidden rounded-md border border-white/10 bg-zinc-950/70"
+                            key={`${image.url}-${image.name}`}
+                          >
+                            <img
+                              alt={image.name}
+                              className="h-48 w-full object-cover"
+                              src={image.url}
+                            />
+                            <figcaption className="truncate px-3 py-2 text-xs text-zinc-400">
+                              {image.name}
+                            </figcaption>
+                          </figure>
+                        ))}
+                      </div>
+                    ) : message.imageUrl ? (
                       <img
                         alt={message.imageName || "Uploaded image"}
                         className="max-h-80 w-full max-w-[420px] rounded-md object-contain"
                         src={message.imageUrl}
                       />
-                    )}
+                    ) : null}
                     <p className="whitespace-pre-wrap">{message.content}</p>
                   </div>
                 </div>

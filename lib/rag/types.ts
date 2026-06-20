@@ -5,6 +5,12 @@ export type ChatMessage = {
   content: string;
   imageName?: string;
   imageUrl?: string;
+  images?: ChatImage[];
+};
+
+export type ChatImage = {
+  name: string;
+  url: string;
 };
 
 export type RagSource = {

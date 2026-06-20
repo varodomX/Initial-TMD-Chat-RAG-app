@@ -127,6 +127,33 @@ function scoreCloudType(query: string, cloud: CloudType) {
   return score;
 }
 
+function overviewCloudTypes(query: string, cloudTypes: CloudType[]) {
+  const normalizedQuery = normalize(query);
+  const asksCloudOverview =
+    normalizedQuery.includes("เมฆ") &&
+    (normalizedQuery.includes("อะไรบ้าง") ||
+      normalizedQuery.includes("ทั้งหมด") ||
+      normalizedQuery.includes("ชนิด") ||
+      normalizedQuery.includes("ประเภท") ||
+      normalizedQuery.includes("แบบไหน"));
+
+  if (!asksCloudOverview) return undefined;
+
+  if (normalizedQuery.includes("ชั้นต่ำ")) {
+    return cloudTypes.filter((cloud) => cloud.level_th.includes("ชั้นต่ำ"));
+  }
+
+  if (normalizedQuery.includes("ชั้นกลาง")) {
+    return cloudTypes.filter((cloud) => cloud.level_th.includes("ชั้นกลาง"));
+  }
+
+  if (normalizedQuery.includes("ชั้นสูง")) {
+    return cloudTypes.filter((cloud) => cloud.level_th.includes("ชั้นสูง"));
+  }
+
+  return cloudTypes;
+}
+
 function toSource(cloud: CloudType, score: number): RagSource {
   const imageUrl = firstExistingImageUrl(cloud.code);
 
@@ -156,7 +183,14 @@ export function hasCloudMultimodalDb() {
 export function createCloudMultimodalRetriever(): Retriever {
   return {
     async search(query, limit) {
-      return loadCloudTypes()
+      const cloudTypes = loadCloudTypes();
+      const overview = overviewCloudTypes(query, cloudTypes);
+
+      if (overview) {
+        return overview.slice(0, limit).map((cloud) => toSource(cloud, 0.95));
+      }
+
+      return cloudTypes
         .map((cloud) => ({ cloud, score: scoreCloudType(query, cloud) }))
         .filter((item) => item.score > 0)
         .sort((a, b) => b.score - a.score)
