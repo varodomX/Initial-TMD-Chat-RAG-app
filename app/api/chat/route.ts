@@ -160,6 +160,38 @@ function sourceLabel(source: RagSource) {
   return `${title}${page}`;
 }
 
+function sourceImage(source: RagSource) {
+  const imageUrl =
+    typeof source.metadata.imageUrl === "string"
+      ? source.metadata.imageUrl
+      : undefined;
+
+  if (!imageUrl) return undefined;
+
+  return {
+    imageUrl,
+    imageName:
+      typeof source.metadata.title === "string"
+        ? source.metadata.title
+        : source.id,
+  };
+}
+
+function attachBestSourceImage(
+  message: ChatMessage,
+  sources: RagSource[],
+): ChatMessage {
+  const image = sources.map(sourceImage).find(Boolean);
+
+  if (!image) return message;
+
+  return {
+    ...message,
+    imageName: image.imageName,
+    imageUrl: image.imageUrl,
+  };
+}
+
 function createExtractiveAnswer(sources: RagSource[], reason?: string) {
   if (!sources.length) {
     return [
@@ -412,18 +444,22 @@ export async function POST(request: Request) {
             : undefined,
         ),
       };
+      const assistantMessageWithImage = attachBestSourceImage(
+        assistantMessage,
+        sources,
+      );
 
       await appendChatLog({
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
-        assistantMessage,
+        assistantMessage: assistantMessageWithImage,
         sources,
         mode: "extractive",
       });
 
       return NextResponse.json({
-        message: assistantMessage,
+        message: assistantMessageWithImage,
         sources,
       });
     }
@@ -509,18 +545,22 @@ export async function POST(request: Request) {
         role: "assistant",
         content: readOutputText(response),
       };
+      const assistantMessageWithImage = attachBestSourceImage(
+        assistantMessage,
+        sources,
+      );
 
       await appendChatLog({
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
-        assistantMessage,
+        assistantMessage: assistantMessageWithImage,
         sources,
         mode: "openai",
       });
 
       return NextResponse.json({
-        message: assistantMessage,
+        message: assistantMessageWithImage,
         sources,
       });
     } catch (error) {
@@ -535,18 +575,22 @@ export async function POST(request: Request) {
           "OpenAI API แจ้งว่า quota ไม่พอ จึงสลับมาตอบจาก vector database โดยตรง",
         ),
       };
+      const assistantMessageWithImage = attachBestSourceImage(
+        assistantMessage,
+        sources,
+      );
 
       await appendChatLog({
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
-        assistantMessage,
+        assistantMessage: assistantMessageWithImage,
         sources,
         mode: "quota-fallback",
       });
 
       return NextResponse.json({
-        message: assistantMessage,
+        message: assistantMessageWithImage,
         sources,
       });
     }
