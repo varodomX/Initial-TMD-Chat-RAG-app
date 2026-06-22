@@ -14,6 +14,7 @@ const DEFAULT_PATHS = [
   "data/khonkaen_rain_vector_db/data/chunks.jsonl",
   "data/cloud_atlas_th_vector_db/cloud_chunks_th.jsonl",
   "data/cloud_multimodal_db/data/cloud_image_chunks.jsonl",
+  "data/km_ai_sob_vector_db/chunks.jsonl",
 ];
 
 const NAMESPACED_ID_SOURCES = new Set([
