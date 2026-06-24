@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { type ClipboardEvent, type FormEvent, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   Database,
@@ -198,6 +198,31 @@ export default function Home() {
       file,
       previewUrl: URL.createObjectURL(file),
     });
+  }
+
+  function onImagePaste(event: ClipboardEvent<HTMLTextAreaElement>) {
+    const imageItem = Array.from(event.clipboardData.items).find(
+      (item) => item.kind === "file" && item.type.startsWith("image/"),
+    );
+
+    if (!imageItem) return;
+
+    const file = imageItem.getAsFile();
+    if (!file) return;
+
+    event.preventDefault();
+
+    const extension =
+      file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1] || "png";
+    const namedFile =
+      file.name && file.name !== "image.png"
+        ? file
+        : new File([file], `pasted-image-${Date.now()}.${extension}`, {
+            type: file.type,
+          });
+
+    onImageSelected(namedFile);
+    inputRef.current?.focus();
   }
 
   async function uploadSelectedImage() {
@@ -499,6 +524,7 @@ export default function Home() {
                   void sendMessage();
                 }
               }}
+              onPaste={onImagePaste}
               placeholder="ค้นหาคำถาม"
               rows={2}
               value={input}
