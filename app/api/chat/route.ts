@@ -6,6 +6,11 @@ import type {
   ResponseInputMessageContentList,
 } from "openai/resources/responses/responses";
 import { appendChatLog } from "@/lib/chat-log";
+import {
+  DAILY_QUESTION_LIMIT,
+  incrementDailyQuota,
+  quotaErrorMessage,
+} from "@/lib/daily-quota";
 import { chatModel, fallbackChatModel, getOpenAI } from "@/lib/openai";
 import { createRetriever, formatSourcesForPrompt } from "@/lib/rag/retriever";
 import type { ChatMessage, RagSource } from "@/lib/rag/types";
@@ -400,6 +405,15 @@ export async function POST(request: Request) {
       );
     }
 
+    const quota = await incrementDailyQuota(request, "question");
+
+    if (!quota.allowed) {
+      return NextResponse.json(
+        { error: quotaErrorMessage("question", DAILY_QUESTION_LIMIT) },
+        { status: 429 },
+      );
+    }
+
     if (
       latest.content &&
       !latest.imageUrl &&
@@ -520,6 +534,7 @@ export async function POST(request: Request) {
             "When checking source weather-entry rows against an observation table, use the measured rain amount to reject impossible rain-intensity codes. Code 64 is heavy intermittent ordinary rain and requires heavy rainfall evidence; a small amount such as 1.2 mm cannot be ww=64. If the row shows ordinary rain lasting 60 minutes and the measured rainfall for that observation period is only about 1.2 mm, correct 64 to 61 for light continuous ordinary rain. Example: observation 19:00 with rain amount 1.2 mm and entry 64 [16:00-17:00] is wrong; the source row should be 61 [16:00-17:00].",
             "For thunderstorm or thundery precipitation in the final hour before observation, apply the minute-35 cutoff carefully: if it stopped at or before minute 35 of the observation hour, use transition ww=29; if it continued beyond minute 35 (minute 36 through the observation time), treat it as present thunderstorm/thundery precipitation and use ww=95-99 according to precipitation intensity and hail. Example: at 09:00 UTC, moderate thundery rain from 08:10-08:35 gives ww=29; if it continues to 08:36 or later, use the appropriate 95-99 code instead.",
             "When ww=95-99 already represents thundery precipitation that occurs in the final 1 hour and is present at observation time, do not automatically duplicate that same final-hour thundery precipitation as W1=9. For W1/W2, describe the remaining valid past-weather evidence in the reference period. Example: secondary time 09:00 UTC with moderate intermittent ordinary rain 08:15-08:30, light thundery rain 08:30-09:00, and cloud > half throughout should be 7wwW1W2=79562: ww=95 from present light thundery rain, W1=6 from ordinary rain, W2=2 from cloud. Do not answer 79592 or force W1=9 just because 08:30-09:00 has thundery rain; that event is already represented by ww=95.",
+            "When ww=17 already represents plain thunderstorm/thunder heard at observation time with no precipitation at the station, do not automatically duplicate that same final-hour plain thunderstorm as W1=9 if it would erase the earlier non-thunderstorm part of the W1/W2 reference period. Example: Thai secondary observation 16:00 has W1/W2 reference period 13:00-16:00. If 13:00-15:00 has no group 9 and only cloud > half, and 17/040 occurs only from 15:40-16:00, report ww=17 and keep W1W2=22, so 7wwW1W2=71722. Do not answer 71792 because group 9 did not occur in 13:00-15:00 and the 15:40-16:00 thunderstorm is already represented by ww=17.",
             "When checking a secondary-time row such as 16:00 with reference period 13:00-16:00, do not ignore an earlier no-rain/cloud-only segment just because later rain or thunderstorm occurs. If 13:00-15:00 has no rain and is coded cloud group 2, then W1/W2 must include code 2 for that segment. Example: observation 16:00 with 10 [13:00-16:00], 03 [13:00-16:00], 97 [15:10-15:20], 95 [15:20-15:30], and 63 [15:30-16:00] should keep W2=2 for the no-rain/cloud period 13:00-15:00 while W1 reflects the more significant later thunderstorm/rain evidence.",
             "For sequential thunderstorm cases, ww=29 applies only if the thundery precipitation/thunderstorm that stopped within the minute-35 cutoff is the last relevant phenomenon in the final hour. If a later plain thunderstorm/thunder heard event occurs after minute 35 without precipitation at the station, use ww=17. Example: at 12:00 UTC, thundery rain 09:45-11:10 would be ww=29 by itself, but a later plain thunderstorm 11:35-11:50 makes ww=17, so 7wwW1W2 can be 71796.",
             "When ww=29 already represents the thunderstorm/thundery precipitation transition, W1/W2 should describe the remaining important past weather needed for completeness; do not automatically duplicate thunderstorm as W1=9 if that would hide ordinary rain group 6 and cloud group 2. Example: 09:00 UTC with ordinary light continuous rain 06:30-08:10, moderate thundery rain 08:10-08:35, and cloud > half throughout gives 7wwW1W2=72962.",
