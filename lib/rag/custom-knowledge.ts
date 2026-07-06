@@ -781,6 +781,34 @@ function scoreRecord(query: string, record: CustomKnowledgeRecord) {
     score += 44;
   }
 
+  if (
+    record.id === "custom_thai_ww_w1w2_two_hour_one_hour_windows_001" &&
+    (normalizedQuery.includes("w1w2") ||
+      normalizedQuery.includes("w1") ||
+      normalizedQuery.includes("w2") ||
+      normalizedQuery.includes("ww") ||
+      normalizedQuery.includes("เวลาไทย") ||
+      normalizedQuery.includes("ช่วงเวลา") ||
+      normalizedQuery.includes("16:00") ||
+      normalizedQuery.includes("16.00") ||
+      normalizedQuery.includes("19:00") ||
+      normalizedQuery.includes("19.00") ||
+      normalizedQuery.includes("22:00") ||
+      normalizedQuery.includes("22.00") ||
+      normalizedQuery.includes("01:00") ||
+      normalizedQuery.includes("01.00") ||
+      normalizedQuery.includes("04:00") ||
+      normalizedQuery.includes("04.00") ||
+      normalizedQuery.includes("07:00") ||
+      normalizedQuery.includes("07.00") ||
+      normalizedQuery.includes("10:00") ||
+      normalizedQuery.includes("10.00") ||
+      normalizedQuery.includes("13:00") ||
+      normalizedQuery.includes("13.00"))
+  ) {
+    score += 46;
+  }
+
   return score;
 }
 

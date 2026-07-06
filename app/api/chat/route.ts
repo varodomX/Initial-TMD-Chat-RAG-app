@@ -70,7 +70,7 @@ async function toOpenAIInputMessage(
     },
     {
       type: "input_image",
-      detail: "auto",
+      detail: "low",
       image_url: await readUploadAsDataUrl(message.imageUrl),
     },
   ];
@@ -459,9 +459,10 @@ export async function POST(request: Request) {
     const retriever = createRetriever();
     const retrievalQuery = latest.content.trim() || latest.imageName || "รูปภาพ";
     const requestedMatchCount = Number(process.env.RAG_MATCH_COUNT || 6);
+    const hasImage = Boolean(latest.imageUrl);
     const sources = await retriever.search(
       retrievalQuery,
-      Math.max(requestedMatchCount, 12),
+      hasImage ? Math.min(requestedMatchCount, 6) : Math.max(requestedMatchCount, 12),
     );
     const context = formatSourcesForPrompt(sources);
 
@@ -514,6 +515,8 @@ export async function POST(request: Request) {
             "Convert only when needed to identify the SYNOP round or explain the comparison, and label the converted time clearly. Convert UTC to Thai local time using UTC+7: 0000 UTC=07:00 Thai, 0300 UTC=10:00 Thai, 0600 UTC=13:00 Thai, 0900 UTC=16:00 Thai, 1200 UTC=19:00 Thai, 1500 UTC=22:00 Thai, 1800 UTC=01:00 Thai next day, 2100 UTC=04:00 Thai next day.",
             "Official W1/W2 reference period rule 12.2.6.6.1: main times 0000, 0600, 1200, 1800 UTC cover 6 hours; secondary times 0300, 0900, 1500, 2100 UTC cover 3 hours; if observations are made every 2 hours, W1/W2 cover 2 hours.",
             "Thai main times are 07:00, 13:00, 19:00, and 01:00 next day. Thai secondary times are 10:00, 16:00, 22:00, and 04:00 next day.",
+            "For Thai 3-hour observation rows, split the 3-hour window into a W1/W2 part and a ww part. W1/W2 mainly describes the first 2 hours before the final present-weather hour: 07:00-09:00 for 10:00, 10:00-12:00 for 13:00, 13:00-15:00 for 16:00, 16:00-18:00 for 19:00, 19:00-21:00 for 22:00, 22:00-00:00 for 01:00, 01:00-03:00 for 04:00, and 04:00-06:00 for 07:00. The final 1 hour is primarily for ww: 09:00-10:00, 12:00-13:00, 15:00-16:00, 18:00-19:00, 21:00-22:00, 00:00-01:00, 03:00-04:00, and 06:00-07:00 Thai time.",
+            "When the final 1-hour ww part already explains the current/present phenomenon, do not automatically pull that same final-hour-only phenomenon into W1/W2 if the first 2-hour W1/W2 part has different evidence such as cloud group 2 or rain group 6. For example, at 16:00 Thai, 13:00-15:00 is the W1/W2 part and 15:00-16:00 is the ww part; if thunder occurs only 15:40-16:00, it supports ww=17, while W1/W2 should still come from 13:00-15:00.",
             "Do not permanently shorten W1/W2 to only 5 hours for main times or only 2 hours for secondary times. The official W1/W2 reference period remains 6 or 3 hours, except the special every-2-hours case.",
             "Selection rule 12.2.6.6.2: choose W1 and W2 so that W1W2 together with ww gives the most complete possible description of weather during the referenced period. If weather changed completely during the period, W1/W2 should show the predominant past weather before the weather represented by ww began.",
             "The final 1 hour before observation is important for present weather ww and transition ww 20-29, but events in that final hour can still inform W1/W2 when needed to describe the referenced period completely. Do not drop rain or thunderstorm from W1/W2 solely because it is also reflected in ww.",

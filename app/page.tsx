@@ -32,6 +32,61 @@ type Source = {
   score: number;
 };
 
+const MAX_UPLOAD_IMAGE_SIDE = 1600;
+const UPLOAD_IMAGE_QUALITY = 0.82;
+
+async function optimizeImageForUpload(file: File) {
+  if (!file.type.startsWith("image/") || file.type === "image/gif") {
+    return file;
+  }
+
+  const imageUrl = URL.createObjectURL(file);
+
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const element = new Image();
+      element.onload = () => resolve(element);
+      element.onerror = () => reject(new Error("อ่านรูปไม่สำเร็จ"));
+      element.src = imageUrl;
+    });
+
+    const scale = Math.min(
+      1,
+      MAX_UPLOAD_IMAGE_SIDE / Math.max(image.naturalWidth, image.naturalHeight),
+    );
+
+    const width = Math.max(1, Math.round(image.naturalWidth * scale));
+    const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+    if (scale === 1 && file.size <= 1.5 * 1024 * 1024) {
+      return file;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+    if (!context) return file;
+
+    context.drawImage(image, 0, 0, width, height);
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", UPLOAD_IMAGE_QUALITY),
+    );
+
+    if (!blob) return file;
+
+    const baseName = file.name.replace(/\.[^.]+$/, "") || "image";
+    return new File([blob], `${baseName}.jpg`, {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  } finally {
+    URL.revokeObjectURL(imageUrl);
+  }
+}
+
 function RadarMascot({ compact = false }: { compact?: boolean }) {
   return (
     <svg
@@ -192,12 +247,23 @@ export default function Home() {
       return;
     }
 
-    removeSelectedImage();
     setError("");
-    setSelectedImage({
-      file,
-      previewUrl: URL.createObjectURL(file),
-    });
+
+    void (async () => {
+      try {
+        const optimizedFile = await optimizeImageForUpload(file);
+
+        removeSelectedImage();
+        setSelectedImage({
+          file: optimizedFile,
+          previewUrl: URL.createObjectURL(optimizedFile),
+        });
+      } catch (caught) {
+        setError(
+          caught instanceof Error ? caught.message : "เตรียมรูปสำหรับอัปโหลดไม่สำเร็จ",
+        );
+      }
+    })();
   }
 
   function onImagePaste(event: ClipboardEvent<HTMLTextAreaElement>) {
