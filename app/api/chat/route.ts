@@ -5,7 +5,7 @@ import type {
   ResponseInput,
   ResponseInputMessageContentList,
 } from "openai/resources/responses/responses";
-import { appendChatLog } from "@/lib/chat-log";
+import { appendChatLog, getChatLogClientInfo } from "@/lib/chat-log";
 import {
   DAILY_QUESTION_LIMIT,
   incrementDailyQuota,
@@ -388,6 +388,7 @@ function createKhonKaenRainAnswer(message: string): ChatMessage | undefined {
 export async function POST(request: Request) {
   let conversationId = "unknown";
   let latest: ChatMessage | undefined;
+  const clientInfo = getChatLogClientInfo(request);
 
   try {
     const body = (await request.json()) as {
@@ -408,6 +409,15 @@ export async function POST(request: Request) {
     const quota = await incrementDailyQuota(request, "question");
 
     if (!quota.allowed) {
+      await appendChatLog({
+        ...clientInfo,
+        conversationId,
+        createdAt: new Date().toISOString(),
+        userMessage: latest,
+        error: quotaErrorMessage("question", DAILY_QUESTION_LIMIT),
+        mode: "quota-denied",
+      });
+
       return NextResponse.json(
         { error: quotaErrorMessage("question", DAILY_QUESTION_LIMIT) },
         { status: 429 },
@@ -422,6 +432,7 @@ export async function POST(request: Request) {
       const assistantMessage = createWwClarificationMessage();
 
       await appendChatLog({
+        ...clientInfo,
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
@@ -441,6 +452,7 @@ export async function POST(request: Request) {
 
       if (rainAnswer) {
         await appendChatLog({
+          ...clientInfo,
           conversationId,
           createdAt: new Date().toISOString(),
           userMessage: latest,
@@ -482,6 +494,7 @@ export async function POST(request: Request) {
       );
 
       await appendChatLog({
+        ...clientInfo,
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
@@ -590,6 +603,7 @@ export async function POST(request: Request) {
       );
 
       await appendChatLog({
+        ...clientInfo,
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
@@ -620,6 +634,7 @@ export async function POST(request: Request) {
       );
 
       await appendChatLog({
+        ...clientInfo,
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,
@@ -643,6 +658,7 @@ export async function POST(request: Request) {
 
     if (latest) {
       await appendChatLog({
+        ...clientInfo,
         conversationId,
         createdAt: new Date().toISOString(),
         userMessage: latest,

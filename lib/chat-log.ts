@@ -2,6 +2,13 @@ import { appendFile, mkdir } from "fs/promises";
 import path from "path";
 import type { ChatMessage, RagSource } from "@/lib/rag/types";
 
+export type ChatLogClientInfo = {
+  clientIp?: string;
+  forwardedFor?: string;
+  realIp?: string;
+  userAgent?: string;
+};
+
 export type ChatLogEntry = {
   conversationId: string;
   createdAt: string;
@@ -14,9 +21,30 @@ export type ChatLogEntry = {
     | "extractive"
     | "quota-fallback"
     | "clarification"
-    | "khonkaen-rain-csv";
-};
+    | "khonkaen-rain-csv"
+    | "quota-denied";
+} & ChatLogClientInfo;
 
+export function getChatLogClientInfo(request: Request): ChatLogClientInfo {
+  const forwardedFor = request.headers.get("x-forwarded-for") || "";
+  const realIp = request.headers.get("x-real-ip") || "";
+  const cfConnectingIp = request.headers.get("cf-connecting-ip") || "";
+  const trueClientIp = request.headers.get("true-client-ip") || "";
+  const userAgent = request.headers.get("user-agent") || "";
+  const clientIp =
+    forwardedFor.split(",")[0]?.trim() ||
+    realIp ||
+    cfConnectingIp ||
+    trueClientIp ||
+    undefined;
+
+  return {
+    clientIp,
+    forwardedFor: forwardedFor || undefined,
+    realIp: realIp || undefined,
+    userAgent: userAgent || undefined,
+  };
+}
 
 const logDir = path.join(
   /*turbopackIgnore: true*/ process.cwd(),
