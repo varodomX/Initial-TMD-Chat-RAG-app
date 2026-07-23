@@ -379,8 +379,8 @@ export default function Home() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(36,199,184,0.22),transparent_28%),radial-gradient(circle_at_83%_15%,rgba(244,63,94,0.18),transparent_25%),radial-gradient(circle_at_75%_86%,rgba(245,158,11,0.12),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-amber-400" />
 
-      <div className="relative grid min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="flex min-h-0 flex-col gap-5 border-b border-white/10 bg-zinc-950/80 p-4 backdrop-blur-xl lg:h-screen lg:border-b-0 lg:border-r lg:p-5">
+      <div className="relative grid min-h-dvh lg:min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]">
+        <aside className="hidden min-h-0 flex-col gap-5 border-b border-white/10 bg-zinc-950/80 p-4 backdrop-blur-xl lg:flex lg:h-screen lg:border-b-0 lg:border-r lg:p-5">
           <div className="flex items-center gap-3">
             <span className="grid size-12 place-items-center rounded-md border border-cyan-300/25 bg-cyan-300/10 shadow-[0_0_35px_rgba(34,211,238,0.2)]">
               <RadarMascot compact />
@@ -457,8 +457,8 @@ export default function Home() {
           </section>
         </aside>
 
-        <section className="grid min-h-[70vh] min-w-0 grid-rows-[auto_minmax(0,1fr)_auto_auto] gap-4 p-4 sm:p-6 lg:h-screen">
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <section className="grid h-dvh min-w-0 grid-rows-[minmax(0,1fr)_auto_auto] gap-0 p-0 sm:gap-3 sm:p-4 lg:h-screen lg:grid-rows-[auto_minmax(0,1fr)_auto_auto] lg:gap-4 lg:p-6">
+          <header className="hidden flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 lg:flex">
             <nav className="flex items-center gap-5 text-xs font-medium text-zinc-500">
               <span className="text-zinc-100">Workspace</span>
               <span>Synop</span>
@@ -470,7 +470,7 @@ export default function Home() {
             </div>
           </header>
 
-          <div className="mx-auto flex w-full max-w-6xl min-h-0 flex-col overflow-hidden rounded-md border border-white/10 bg-zinc-950/60 shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_0_70px_rgba(236,72,153,0.16)]">
+          <div className="mx-auto flex min-h-0 w-full max-w-6xl flex-col overflow-hidden border-white/10 bg-zinc-950/60 sm:rounded-md sm:border sm:shadow-[0_0_0_1px_rgba(34,211,238,0.12),0_0_70px_rgba(236,72,153,0.16)]">
             <div className="flex min-h-12 items-center justify-between border-b border-white/10 px-4">
               <div className="flex items-center gap-2 text-sm font-medium text-zinc-200">
                 <span className="size-3 rounded-full border border-cyan-300 bg-cyan-300 shadow-[0_0_16px_rgba(34,211,238,0.75)]" />
@@ -481,8 +481,8 @@ export default function Home() {
               </span>
             </div>
 
-            <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-auto p-3 sm:p-5">
-              <div className="grid gap-1 border-b border-white/10 pb-4">
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-3 sm:gap-4 sm:p-5">
+              <div className="hidden gap-1 border-b border-white/10 pb-4 sm:grid">
                 <div className="flex flex-wrap items-center gap-4">
                   <RadarMascot />
                   <div>
@@ -507,7 +507,7 @@ export default function Home() {
                     {message.role === "assistant" ? "น้องแก่นฟ้า" : "You"}
                   </span>
                   <div
-                    className={`grid gap-3 rounded-md border p-4 leading-7 shadow-sm ${
+                    className={`grid gap-3 rounded-md border p-3 leading-7 shadow-sm sm:p-4 ${
                       message.role === "user"
                         ? "border-cyan-300/30 bg-cyan-300/[0.08] text-cyan-50"
                         : "border-white/10 bg-white/[0.045] text-zinc-100"
@@ -557,13 +557,13 @@ export default function Home() {
           </div>
 
           {error && (
-            <div className="mx-auto w-full max-w-6xl rounded-md border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+            <div className="mx-auto w-full max-w-6xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100 sm:rounded-md">
               {error}
             </div>
           )}
 
           <form
-            className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_48px_48px] gap-3 rounded-md border border-white/10 bg-zinc-950/90 p-3 shadow-[0_0_40px_rgba(34,211,238,0.1)]"
+            className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_44px_44px] gap-2 border border-x-0 border-b-0 border-white/10 bg-zinc-950/95 p-2 shadow-[0_0_40px_rgba(34,211,238,0.1)] sm:grid-cols-[minmax(0,1fr)_48px_48px] sm:gap-3 sm:rounded-md sm:border-x sm:border-b sm:bg-zinc-950/90 sm:p-3"
             onSubmit={onSubmit}
           >
             {selectedImage && (
@@ -589,7 +589,7 @@ export default function Home() {
             <textarea
               ref={inputRef}
               aria-label="Message"
-              className="min-h-14 max-h-44 resize-y border-0 bg-transparent py-3 leading-6 text-zinc-100 outline-none placeholder:text-zinc-600"
+              className="min-h-12 max-h-32 resize-y border-0 bg-transparent py-2 leading-6 text-zinc-100 outline-none placeholder:text-zinc-600 sm:min-h-14 sm:max-h-44 sm:py-3"
               onChange={(event) => setInput(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
@@ -611,7 +611,7 @@ export default function Home() {
             />
             <button
               aria-label="Attach image"
-              className="grid size-12 place-items-center self-end rounded-md border border-white/10 bg-white/[0.04] text-cyan-200 transition hover:border-cyan-300/50 hover:bg-cyan-300/10 disabled:cursor-not-allowed disabled:opacity-45"
+              className="grid size-11 place-items-center self-end rounded-md border border-white/10 bg-white/[0.04] text-cyan-200 transition hover:border-cyan-300/50 hover:bg-cyan-300/10 disabled:cursor-not-allowed disabled:opacity-45 sm:size-12"
               onClick={() => fileInputRef.current?.click()}
               type="button"
             >
@@ -619,7 +619,7 @@ export default function Home() {
             </button>
             <button
               aria-label="Send message"
-              className="grid size-12 place-items-center self-end rounded-md bg-cyan-200 text-zinc-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-45"
+              className="grid size-11 place-items-center self-end rounded-md bg-cyan-200 text-zinc-950 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-45 sm:size-12"
               disabled={!canSubmit}
               type="submit"
             >

@@ -69,6 +69,36 @@ export type ChatLogHistoryEntry = ChatLogEntry & {
   sourceCount: number;
 };
 
+export type ChatQuestionHistoryEntry = {
+  askedAt: string;
+  askedAtBangkok: string;
+  ip: string;
+  conversationId: string;
+  question: string;
+  answer: string;
+  error: string;
+  mode: ChatLogEntry["mode"];
+  hasImage: boolean;
+  imageName: string;
+};
+
+function bangkokTime(isoDate: string) {
+  const date = new Date(isoDate);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
+}
+
 export async function readChatLogHistory(limit = 200) {
   try {
     const content = await readFile(logFile, "utf8");
@@ -102,4 +132,23 @@ export async function readChatLogHistory(limit = 200) {
 
     throw error;
   }
+}
+
+export async function readChatQuestionHistory(limit = 200) {
+  const entries = await readChatLogHistory(limit);
+
+  return entries.map(
+    (entry): ChatQuestionHistoryEntry => ({
+      askedAt: entry.createdAt,
+      askedAtBangkok: bangkokTime(entry.createdAt),
+      ip: entry.clientIp || entry.realIp || entry.forwardedFor || "",
+      conversationId: entry.conversationId,
+      question: entry.userMessage?.content || "",
+      answer: entry.assistantMessage?.content || "",
+      error: entry.error || "",
+      mode: entry.mode,
+      hasImage: Boolean(entry.userMessage?.imageUrl),
+      imageName: entry.userMessage?.imageName || "",
+    }),
+  );
 }
