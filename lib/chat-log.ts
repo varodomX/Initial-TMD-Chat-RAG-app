@@ -22,7 +22,8 @@ export type ChatLogEntry = {
     | "quota-fallback"
     | "clarification"
     | "khonkaen-rain-csv"
-    | "quota-denied";
+    | "quota-denied"
+    | "question-received";
 } & ChatLogClientInfo;
 
 export function getChatLogClientInfo(request: Request): ChatLogClientInfo {
@@ -135,10 +136,22 @@ export async function readChatLogHistory(limit = 200) {
 }
 
 export async function readChatQuestionHistory(limit = 200) {
-  const entries = await readChatLogHistory(limit);
+  const entries = await readChatLogHistory(limit * 2);
+  const seen = new Set<string>();
+  const questionEntries: ChatQuestionHistoryEntry[] = [];
 
-  return entries.map(
-    (entry): ChatQuestionHistoryEntry => ({
+  for (const entry of entries) {
+    const key = [
+      entry.conversationId,
+      entry.createdAt,
+      entry.userMessage?.content || "",
+      entry.userMessage?.imageUrl || "",
+    ].join("|");
+
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    questionEntries.push({
       askedAt: entry.createdAt,
       askedAtBangkok: bangkokTime(entry.createdAt),
       ip: entry.clientIp || entry.realIp || entry.forwardedFor || "",
@@ -149,6 +162,10 @@ export async function readChatQuestionHistory(limit = 200) {
       mode: entry.mode,
       hasImage: Boolean(entry.userMessage?.imageUrl),
       imageName: entry.userMessage?.imageName || "",
-    }),
-  );
+    });
+
+    if (questionEntries.length >= limit) break;
+  }
+
+  return questionEntries;
 }
