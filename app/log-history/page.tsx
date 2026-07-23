@@ -5,35 +5,24 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
-  Bot,
   Clock,
-  Database,
   Loader2,
-  Monitor,
   RefreshCw,
   Search,
   UserRound,
 } from "lucide-react";
 
-type ChatLogMessage = {
-  role: "user" | "assistant";
-  content: string;
-  imageName?: string;
-  imageUrl?: string;
-};
-
 type ChatLogEntry = {
+  askedAt: string;
+  askedAtBangkok: string;
+  ip: string;
   conversationId: string;
-  createdAt: string;
-  userMessage: ChatLogMessage;
-  assistantMessage?: ChatLogMessage;
-  error?: string;
+  question: string;
+  answer: string;
+  error: string;
   mode: string;
-  clientIp?: string;
-  forwardedFor?: string;
-  realIp?: string;
-  userAgent?: string;
-  sourceCount: number;
+  hasImage: boolean;
+  imageName: string;
 };
 
 function formatDateTime(value: string) {
@@ -54,17 +43,6 @@ function shortId(value: string) {
   return value.length > 12 ? `${value.slice(0, 8)}...${value.slice(-4)}` : value;
 }
 
-function browserLabel(userAgent?: string) {
-  if (!userAgent) return "-";
-
-  if (userAgent.includes("Edg/")) return "Microsoft Edge";
-  if (userAgent.includes("Chrome/")) return "Chrome";
-  if (userAgent.includes("Firefox/")) return "Firefox";
-  if (userAgent.includes("Safari/")) return "Safari";
-
-  return userAgent.slice(0, 80);
-}
-
 export default function LogHistoryPage() {
   const [entries, setEntries] = useState<ChatLogEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +54,7 @@ export default function LogHistoryPage() {
     setError("");
 
     try {
-      const response = await fetch("/api/log-history?limit=300", {
+      const response = await fetch("/api/chat_logs?limit=300", {
         cache: "no-store",
       });
       const data = await response.json();
@@ -96,7 +74,7 @@ export default function LogHistoryPage() {
   useEffect(() => {
     let isMounted = true;
 
-    fetch("/api/log-history?limit=300", {
+    fetch("/api/chat_logs?limit=300", {
       cache: "no-store",
     })
       .then(async (response) => {
@@ -133,15 +111,13 @@ export default function LogHistoryPage() {
 
     return entries.filter((entry) =>
       [
-        entry.clientIp,
-        entry.forwardedFor,
-        entry.realIp,
-        entry.userAgent,
+        entry.ip,
         entry.conversationId,
         entry.mode,
-        entry.userMessage?.content,
-        entry.assistantMessage?.content,
+        entry.question,
+        entry.answer,
         entry.error,
+        entry.askedAtBangkok,
       ]
         .filter(Boolean)
         .join(" ")
@@ -151,10 +127,7 @@ export default function LogHistoryPage() {
   }, [entries, query]);
 
   const uniqueVisitors = useMemo(
-    () =>
-      new Set(
-        entries.map((entry) => entry.clientIp || entry.realIp || entry.forwardedFor),
-      ).size,
+    () => new Set(entries.map((entry) => entry.ip).filter(Boolean)).size,
     [entries],
   );
 
@@ -171,9 +144,9 @@ export default function LogHistoryPage() {
               <ArrowLeft size={18} />
             </Link>
             <div>
-              <h1 className="text-xl font-semibold text-white">Log History</h1>
+              <h1 className="text-xl font-semibold text-white">chat_logs</h1>
               <p className="text-sm text-zinc-500">
-                ประวัติผู้ใช้งานและคำถามล่าสุดจากระบบแชต
+                ประวัติ IP, คำถาม, คำตอบ และวันเวลาจากระบบแชต
               </p>
             </div>
           </div>
@@ -197,7 +170,7 @@ export default function LogHistoryPage() {
         <div className="grid gap-3 md:grid-cols-3">
           <div className="rounded-md border border-white/10 bg-white/[0.035] p-4">
             <div className="flex items-center gap-2 text-sm text-zinc-400">
-              <Database className="text-cyan-300" size={17} />
+              <Clock className="text-cyan-300" size={17} />
               รายการทั้งหมด
             </div>
             <p className="mt-2 text-2xl font-semibold text-white">{entries.length}</p>
@@ -227,7 +200,7 @@ export default function LogHistoryPage() {
           <input
             className="h-10 border-0 bg-transparent text-sm text-zinc-100 outline-none placeholder:text-zinc-600"
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="ค้นหา IP, conversation, browser, คำถาม หรือคำตอบ"
+            placeholder="ค้นหา IP, วันเวลา, conversation, คำถาม หรือคำตอบ"
             type="search"
             value={query}
           />
@@ -241,12 +214,11 @@ export default function LogHistoryPage() {
         )}
 
         <div className="overflow-hidden rounded-md border border-white/10 bg-zinc-950/70">
-          <div className="grid min-w-[980px] grid-cols-[170px_160px_120px_minmax(260px,1fr)_minmax(260px,1fr)] gap-3 border-b border-white/10 px-4 py-3 text-xs font-semibold uppercase text-zinc-500">
-            <span>เวลา</span>
-            <span>ผู้ใช้งาน</span>
-            <span>โหมด</span>
-            <span>คำถาม</span>
-            <span>คำตอบ / สถานะ</span>
+          <div className="grid min-w-[980px] grid-cols-[190px_150px_minmax(290px,1fr)_minmax(330px,1.2fr)] gap-3 border-b border-white/10 px-4 py-3 text-xs font-semibold uppercase text-zinc-500">
+            <span>วันเวลา</span>
+            <span>IP</span>
+            <span>ถามว่าอะไร</span>
+            <span>ตอบอะไร</span>
           </div>
           <div className="max-h-[70vh] min-w-[980px] overflow-auto">
             {isLoading ? (
@@ -257,52 +229,43 @@ export default function LogHistoryPage() {
             ) : filteredEntries.length ? (
               filteredEntries.map((entry, index) => (
                 <article
-                  className="grid grid-cols-[170px_160px_120px_minmax(260px,1fr)_minmax(260px,1fr)] gap-3 border-b border-white/10 px-4 py-4 text-sm last:border-b-0"
-                  key={`${entry.createdAt}-${entry.conversationId}-${index}`}
+                  className="grid grid-cols-[190px_150px_minmax(290px,1fr)_minmax(330px,1.2fr)] gap-3 border-b border-white/10 px-4 py-4 text-sm last:border-b-0"
+                  key={`${entry.askedAt}-${entry.conversationId}-${index}`}
                 >
                   <div className="grid content-start gap-1">
                     <span className="text-zinc-200">
-                      {formatDateTime(entry.createdAt)}
+                      {entry.askedAtBangkok || formatDateTime(entry.askedAt)}
                     </span>
                     <span className="font-mono text-[11px] text-zinc-600">
                       {shortId(entry.conversationId)}
                     </span>
+                    <span className="w-fit rounded bg-white/[0.06] px-2 py-1 text-xs text-zinc-400">
+                      {entry.mode}
+                    </span>
                   </div>
                   <div className="grid content-start gap-1 text-zinc-400">
                     <span className="font-mono text-xs text-cyan-100">
-                      {entry.clientIp || entry.realIp || "-"}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-zinc-500">
-                      <Monitor size={13} />
-                      {browserLabel(entry.userAgent)}
-                    </span>
-                  </div>
-                  <div className="grid content-start gap-2">
-                    <span className="w-fit rounded bg-white/[0.06] px-2 py-1 text-xs text-zinc-300">
-                      {entry.mode}
-                    </span>
-                    <span className="text-xs text-zinc-600">
-                      {entry.sourceCount} sources
+                      {entry.ip || "-"}
                     </span>
                   </div>
                   <div className="grid content-start gap-2">
                     <div className="flex items-center gap-2 text-xs font-medium text-cyan-200">
                       <UserRound size={14} />
-                      User
+                      คำถาม
                     </div>
                     <p className="line-clamp-5 whitespace-pre-wrap leading-6 text-zinc-200">
-                      {entry.userMessage?.content || "-"}
+                      {entry.question || "-"}
                     </p>
-                    {entry.userMessage?.imageName && (
+                    {entry.hasImage && (
                       <span className="text-xs text-zinc-500">
-                        รูปภาพ: {entry.userMessage.imageName}
+                        แนบรูปภาพ{entry.imageName ? `: ${entry.imageName}` : ""}
                       </span>
                     )}
                   </div>
                   <div className="grid content-start gap-2">
                     <div className="flex items-center gap-2 text-xs font-medium text-fuchsia-200">
-                      <Bot size={14} />
-                      Assistant
+                      <UserRound size={14} />
+                      คำตอบ
                     </div>
                     {entry.error ? (
                       <p className="rounded border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-amber-100">
@@ -310,7 +273,7 @@ export default function LogHistoryPage() {
                       </p>
                     ) : (
                       <p className="line-clamp-5 whitespace-pre-wrap leading-6 text-zinc-300">
-                        {entry.assistantMessage?.content || "-"}
+                        {entry.answer || "-"}
                       </p>
                     )}
                   </div>

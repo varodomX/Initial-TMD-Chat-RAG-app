@@ -435,9 +435,9 @@ export default function Home() {
             )}
             <Link
               className="flex h-9 items-center rounded-md px-3 text-left text-sm text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
-              href="/log-history"
+              href="/chat_logs"
             >
-              Log History
+              chat_logs
             </Link>
           </section>
 
