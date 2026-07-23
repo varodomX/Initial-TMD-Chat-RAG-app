@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "export:chat-logs": "node scripts/export-chat-logs.mjs",
+    "migrate:chat-logs": "node scripts/migrate-chat-logs-to-supabase.mjs",
     "ingest:pgvector": "node scripts/ingest-jsonl-to-pgvector.mjs",
     "lint": "eslint ."
   },
