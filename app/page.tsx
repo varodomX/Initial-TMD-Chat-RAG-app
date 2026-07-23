@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { type ClipboardEvent, type FormEvent, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
   BookOpen,
   Database,
@@ -421,7 +422,7 @@ export default function Home() {
             <h2 className="px-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-600">
               Main
             </h2>
-            {["Templates", "Saved Chat", "Files", "History", "Integrations"].map(
+            {["Templates", "Saved Chat", "Files", "Integrations"].map(
               (item) => (
                 <button
                   className="flex h-9 items-center rounded-md px-3 text-left text-sm text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
@@ -432,6 +433,12 @@ export default function Home() {
                 </button>
               ),
             )}
+            <Link
+              className="flex h-9 items-center rounded-md px-3 text-left text-sm text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
+              href="/log-history"
+            >
+              Log History
+            </Link>
           </section>
 
           <section className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto">

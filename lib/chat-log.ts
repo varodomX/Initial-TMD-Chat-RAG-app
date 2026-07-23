@@ -1,4 +1,4 @@
-import { appendFile, mkdir } from "fs/promises";
+import { appendFile, mkdir, readFile } from "fs/promises";
 import path from "path";
 import type { ChatMessage, RagSource } from "@/lib/rag/types";
 
@@ -62,5 +62,44 @@ export async function appendChatLog(entry: ChatLogEntry) {
       "Chat log was skipped:",
       error instanceof Error ? error.message : error,
     );
+  }
+}
+
+export type ChatLogHistoryEntry = ChatLogEntry & {
+  sourceCount: number;
+};
+
+export async function readChatLogHistory(limit = 200) {
+  try {
+    const content = await readFile(logFile, "utf8");
+    const lines = content.split(/\r?\n/).filter(Boolean);
+    const entries: ChatLogHistoryEntry[] = [];
+
+    for (const line of lines.reverse()) {
+      if (entries.length >= limit) break;
+
+      try {
+        const entry = JSON.parse(line) as ChatLogEntry;
+        entries.push({
+          ...entry,
+          sourceCount: Array.isArray(entry.sources) ? entry.sources.length : 0,
+        });
+      } catch {
+        // Skip malformed log rows so one bad append cannot break the history page.
+      }
+    }
+
+    return entries;
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "ENOENT"
+    ) {
+      return [];
+    }
+
+    throw error;
   }
 }
