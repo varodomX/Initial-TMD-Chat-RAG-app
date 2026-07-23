@@ -195,7 +195,14 @@ export async function incrementDailyQuota(
   const db = getPool();
 
   if (db) {
-    return incrementPostgresQuota(db, request, kind, limit);
+    try {
+      return await incrementPostgresQuota(db, request, kind, limit);
+    } catch (error) {
+      console.warn(
+        "Postgres quota failed; falling back to local quota:",
+        error instanceof Error ? error.message : error,
+      );
+    }
   }
 
   return incrementLocalQuota(request, kind, limit);

@@ -91,7 +91,7 @@ const reader = readline.createInterface({
 });
 const writer = createWriteStream(outputPath, "utf8");
 
-writer.write(`${columns.join(",")}\n`);
+writer.write(`\uFEFF${columns.join(",")}\n`);
 
 let exportedCount = 0;
 let skippedCount = 0;
