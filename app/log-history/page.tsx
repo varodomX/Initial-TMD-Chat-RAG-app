@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Clock,
+  Download,
   Loader2,
   RefreshCw,
   Search,
@@ -150,19 +151,28 @@ export default function LogHistoryPage() {
               </p>
             </div>
           </div>
-          <button
-            className="flex h-10 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-zinc-200 transition hover:border-cyan-300/50 hover:bg-cyan-300/10 disabled:opacity-50"
-            disabled={isLoading}
-            onClick={() => void loadLogs()}
-            type="button"
-          >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={16} />
-            ) : (
-              <RefreshCw size={16} />
-            )}
-            Refresh
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              className="flex h-10 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-zinc-200 transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
+              href="/api/log-history?limit=500&format=csv"
+            >
+              <Download size={16} />
+              Export CSV
+            </a>
+            <button
+              className="flex h-10 items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-zinc-200 transition hover:border-cyan-300/50 hover:bg-cyan-300/10 disabled:opacity-50"
+              disabled={isLoading}
+              onClick={() => void loadLogs()}
+              type="button"
+            >
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <RefreshCw size={16} />
+              )}
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
 
